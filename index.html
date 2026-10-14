@@ -1,0 +1,1556 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoFit Opportunity Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  /* Paleta Schneider: verde da marca #009530, Life Green #3DCD58 */
+  --bg:#f1f5f2; --surface:#ffffff; --ink:#0f2318; --muted:#4f6357; --line:#d3e1d7; --field:#f5f8f6;
+  --brand:#3dcd58; --on-brand:#062812; --brand-soft:#dff5e4; --brand-strong:#00742a; --sg:#009530; --band:#00742a;
+  --focus:#00612a; --bad:#b3261e; --bad-soft:#fdeceb; --warn:#f28c1f;
+  --t-eco:#00742a; --t-retro:#0a6b4a; --t-pd:#0d5a5f; --t-sub:#1a4d73; --t-neutral:#3d4a43;
+  --l-eco:#3dcd58; --l-retro:#3dcd58; --l-pd:#3dcd58; --l-sub:#3dcd58; --l-off:#d3ddd6;
+  --font-body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-head:"Barlow Semi Condensed","Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1611; --surface:#13231a; --ink:#e8f2ea; --muted:#a3b8aa; --line:#25382c; --field:#1a2c21;
+    --brand:#3dcd58; --on-brand:#062812; --brand-soft:#173324; --brand-strong:#5fe07a; --sg:#3dcd58; --band:#0a3d1f;
+    --focus:#7be495; --bad:#ff8a80; --bad-soft:#3a1f1d;
+    --l-off:#2f4136;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c1611; --surface:#13231a; --ink:#e8f2ea; --muted:#a3b8aa; --line:#25382c; --field:#1a2c21;
+    --brand:#3dcd58; --on-brand:#062812; --brand-soft:#173324; --brand-strong:#5fe07a; --sg:#3dcd58; --band:#0a3d1f;
+    --focus:#7be495; --bad:#ff8a80; --bad-soft:#3a1f1d;
+    --l-off:#2f4136;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:clip}
+.app{max-width:780px;margin:0 auto;padding:0 16px 0}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Cabeçalho */
+.top{position:relative;isolation:isolate;display:flex;align-items:center;gap:14px;margin-bottom:24px;padding:16px 0;clip-path:inset(0 -100vmax -5px -100vmax)}
+.top::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:-100vmax;right:-100vmax;background:var(--band)}
+.top::after{content:"";position:absolute;z-index:-1;bottom:-5px;height:5px;left:-100vmax;right:-100vmax;background:var(--brand)}
+.top>div:last-child{min-width:0}
+.logo{flex:none;background:#fff;border-radius:10px;padding:5px 9px;display:grid;place-items:center}
+.logo img{display:block;height:40px;width:auto}
+@media (max-width:520px){.top{gap:10px;margin-bottom:18px;padding:12px 0}.top h1{font-size:21px}.top p{display:none}.logo img{height:34px}}
+.mark{flex:none;width:40px;height:40px;border-radius:10px;background:var(--brand);display:grid;place-items:center}
+.mark svg{width:22px;height:22px;fill:none;stroke:var(--on-brand);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.top h1{margin:0;font:700 24px/1.1 var(--font-head);letter-spacing:.005em;color:#fff}
+.top p{margin:2px 0 0;color:rgba(255,255,255,.88);font-size:15px}
+
+/* Etapas */
+.stepper{list-style:none;margin:0 0 18px;padding:0;display:flex}
+.stepper li{flex:1;position:relative;min-width:0}
+.stepper li:not(:last-child)::after{content:"";position:absolute;top:17px;left:calc(50% + 20px);right:calc(-50% + 20px);height:3px;border-radius:2px;background:var(--line)}
+.stepper li.done:not(:last-child)::after{background:var(--brand)}
+.stepper button{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;cursor:pointer;padding:0 2px}
+.stepper button:disabled{cursor:default}
+.stepper button:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:8px}
+.node{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:600 15px var(--font-head);background:var(--surface);border:2px solid var(--line);color:var(--muted)}
+.stepper .done .node{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.stepper .current .node{border-color:var(--sg);color:var(--brand-strong);box-shadow:0 0 0 4px var(--brand-soft)}
+.lbl{display:none;font-size:13px;line-height:1.2;color:var(--muted);text-align:center}
+.stepper .current .lbl{display:block;color:var(--ink);font-weight:600}
+@media (min-width:640px){.lbl{display:block}}
+@media (max-width:639px){
+  .stepper{margin-bottom:8px}
+  .stepper li.current{flex:2.4}
+  .stepper li:not(:last-child)::after{left:calc(50% + 20px);right:calc(-50% + 20px)}
+}
+
+/* Cartão de perguntas */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 20px;margin-bottom:16px}
+.card h2{margin:0 0 4px;font:700 28px/1.1 var(--font-head);color:var(--brand-strong)}
+.intro{margin:0 0 20px;color:var(--muted)}
+.q{padding:16px 0;border-top:1px solid var(--line);border-radius:10px}
+.q:first-of-type{border-top:0;padding-top:4px}
+.ql{font-weight:600;margin-bottom:8px;max-width:60ch}
+.tag{font-weight:400;color:var(--muted);font-size:14px;margin-left:6px}
+.hint{color:var(--muted);font-size:15px;margin:-4px 0 10px;max-width:62ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.opt{position:relative;display:block}
+.opt input{position:absolute;z-index:1;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.opt span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:48px;padding:10px 18px;border-radius:12px;border:2px solid var(--line);background:var(--field);font-weight:500;transition:background-color .12s,border-color .12s,color .12s}
+.opt input:checked + span{background:var(--brand);border-color:var(--sg);color:var(--on-brand);font-weight:600}
+.opt input:focus-visible + span{outline:3px solid var(--focus);outline-offset:2px}
+.opts:not(.grid) .opt span{min-width:96px}
+.opt span{flex-direction:column;gap:1px}
+.opt span small{display:block;font-size:12.5px;font-weight:400;opacity:.78;line-height:1.25}
+.pill{flex:none;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;margin-left:2px}
+.pill.legacy{background:color-mix(in srgb,var(--warn) 26%,transparent);color:var(--ink)}
+.pill.eco{background:var(--brand-soft);color:var(--brand-strong)}
+.opt-none{margin-left:10px;padding-left:10px;border-left:2px solid var(--line)}
+.opt input:disabled + span{opacity:.4;cursor:not-allowed}
+.txt{width:100%;max-width:520px;min-height:48px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--field)}
+.txt:focus-visible{border-color:var(--focus);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 30%,transparent)}
+textarea.obs{min-height:76px;resize:vertical;font:inherit;line-height:1.4}
+.upd-hint{display:block;margin-top:4px;font-weight:400;color:var(--muted);font-size:13px;line-height:1.35}
+.suggest-box{display:grid;gap:8px;margin-top:10px}
+.suggest-chip{background:var(--brand-soft);border:1px solid var(--sg);border-radius:12px;padding:10px 12px;font-size:14px;font-weight:400;color:var(--ink);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;justify-content:space-between}
+.suggest-actions{display:flex;gap:8px;flex:none}
+.btn.sm{min-height:36px;padding:6px 14px;font-size:14px}
+.obs-echo{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--field);border:1px dashed var(--line);font-size:14px;color:var(--muted);font-weight:400}
+.err{display:none;margin-top:8px;color:var(--bad);font-size:15px;font-weight:500}
+.q.bad{background:var(--bad-soft);outline:2px solid var(--bad);outline-offset:0;padding-left:12px;padding-right:12px;margin-left:-12px;margin-right:-12px}
+.q.bad .err{display:block}
+
+/* Barra de navegação */
+.nav{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);margin-top:8px}
+.count{color:var(--muted);font-size:15px}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 24px;border-radius:12px;font-weight:600;border:2px solid var(--line);background:var(--surface);text-align:center}
+.btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn.primary:hover{background:color-mix(in srgb,var(--brand) 88%,#000);border-color:color-mix(in srgb,var(--brand) 88%,#000)}
+.btn[disabled]{opacity:.4;cursor:default}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+
+/* Resultado */
+.verdict{border-radius:18px;padding:24px 22px 26px;color:#fff;margin-bottom:16px;background:var(--tone);border-bottom:7px solid var(--brand)}
+.verdict.sec{background:var(--surface);color:var(--ink);border:2px solid var(--tone);border-bottom:2px solid var(--tone);padding:16px 18px}
+.verdict.sec .ctx{color:var(--tone);opacity:1;font-weight:700;text-transform:uppercase;font-size:12px;letter-spacing:.04em;margin-bottom:6px}
+.verdict.sec h2{font-size:20px;color:var(--tone)}
+.verdict.sec .msg{color:var(--ink);font-size:15px}
+.why{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.why b{display:block;margin-bottom:6px}
+.why p{margin:0 0 6px}
+.verdict .ctx{margin:0 0 14px;font-size:15px;opacity:.85}
+.verdict h2{margin:0 0 8px;font:700 clamp(30px,7vw,42px)/1.02 var(--font-head)}
+.verdict p.msg{margin:0;font-size:18px;max-width:52ch}
+.tone-eco{--tone:var(--t-eco)} .tone-retrofit{--tone:var(--t-retro)} .tone-prodiag{--tone:var(--t-pd)} .tone-sub{--tone:var(--t-sub)} .tone-nutrir{--tone:var(--t-neutral)} .tone-foraCatalogo{--tone:var(--t-neutral)}
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+.gauge{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px}
+.g-name{font-size:14px;color:var(--muted)}
+.g-level{font:700 24px/1.15 var(--font-head);margin:2px 0 8px;color:var(--brand-strong)}
+.lamps{display:flex;gap:6px}
+.lamps i{width:18px;height:18px;border-radius:50%;background:var(--l-off);border:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
+.lamps i.on{background:var(--lamp);box-shadow:0 0 0 3px color-mix(in srgb,var(--lamp) 30%,transparent);border-color:var(--sg)}
+.g-why{margin:8px 0 0;font-size:13px;line-height:1.35;color:var(--muted)}
+.k-eco{--lamp:var(--l-eco)} .k-retro{--lamp:var(--l-retro)} .k-pd{--lamp:var(--l-pd)} .k-sub{--lamp:var(--l-sub)}
+.section{margin:0 0 16px}
+.section h3{margin:0 0 10px;font:700 22px/1.15 var(--font-head);color:var(--brand-strong)}
+.card.tight{padding:18px 20px}
+.facts{margin:0;display:grid;grid-template-columns:minmax(0,190px) 1fr;gap:10px 16px}
+.facts dt{color:var(--muted);font-size:15px}
+.facts dd{margin:0;font-weight:500}
+@media (max-width:520px){.facts{grid-template-columns:1fr;gap:0}.facts dd{margin-bottom:10px}}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.checks label{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:var(--field);cursor:pointer}
+.checks input{flex:none;width:22px;height:22px;margin:2px 0 0;accent-color:var(--sg)}
+.checks input:checked + span{text-decoration:line-through;color:var(--muted)}
+.bul{margin:0;padding-left:20px;display:grid;gap:4px}
+.args{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.args li{padding:12px 14px;border-radius:12px;background:var(--field);max-width:70ch}
+.offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.offer{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.offer b{display:block;font:700 19px/1.2 var(--font-head);margin-bottom:2px}
+.offer span{color:var(--muted);font-size:15px}
+.gaps{margin:0;padding-left:20px;display:grid;gap:4px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 20px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:15px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .15s;z-index:10}
+.toast.show{opacity:1}
+.foot{color:var(--muted);font-size:14px;padding:4px 0 24px}
+
+/* Fabricante e busca */
+.maker-btn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;max-width:520px;min-height:56px;padding:12px 18px;margin-bottom:10px;border-radius:12px;border:2px solid var(--line);background:var(--field);font-weight:600;font-size:18px}
+.maker-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.maker-btn .bolt{flex:none;width:30px;height:30px;border-radius:8px;background:var(--brand);display:grid;place-items:center}
+.maker-btn .bolt svg{width:17px;height:17px;fill:none;stroke:var(--on-brand);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.maker-btn.on{background:var(--brand);border-color:var(--sg);color:var(--on-brand)}
+.maker-btn.on .bolt{background:var(--on-brand)}
+.maker-btn.on .bolt svg{stroke:var(--brand)}
+@media (max-width:420px){.maker-btn.on::after{content:"\2713";font-size:18px;font-weight:700}}
+.maker-btn.on::after{content:"Selecionado";margin-left:auto;font-size:14px;font-weight:500;opacity:.9}
+.combo{position:relative;max-width:520px;scroll-margin-top:72px}
+.combo .ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.combo .txt{padding-left:42px}
+.lb{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;margin:0;padding:6px;list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.2);max-height:264px;overflow:auto}
+.lb li{padding:10px 12px;min-height:44px;display:flex;align-items:center;gap:8px;border-radius:8px;cursor:pointer}
+.lb li small{color:var(--muted);font-size:14px}
+.lb li .grp{margin-left:auto;padding-left:10px;color:var(--muted);font-size:13px;text-align:right}
+.lb li.act,.lb li:hover{background:var(--brand-soft)}
+.lb li.free{color:var(--brand-strong);font-weight:600}
+
+/* E-mails */
+.mail-names{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 12px;margin-bottom:6px}
+.mail-l{display:block;font-weight:600;font-size:15px;margin:0 0 14px}
+.mail-l .txt{display:block;margin-top:6px;font-weight:400;max-width:none}
+.mail-kinds{margin-bottom:16px}
+.mail-body{display:block;width:100%;margin-top:6px;min-height:280px;padding:14px;border-radius:12px;border:2px solid var(--line);background:var(--field);font:400 16px/1.55 var(--font-body);resize:vertical}
+.mail-body:focus-visible{border-color:var(--focus);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 30%,transparent)}
+.card .hint{margin:0 0 14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  :root{padding:0}
+  body{background:#fff;color:#000}
+  .stepper,.nav,.actions,.toast,.foot,.no-print{display:none!important}
+  .card,.gauge,.offer{border-color:#999;break-inside:avoid}
+  .top{background:none;box-shadow:none;clip-path:none;padding:0 0 10px}
+  .top::before,.top::after{display:none}
+  .top h1{color:#000}.top p{color:#333}
+  .verdict{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .lamps i{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<main class="app" id="app"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+var LOGO="data:image/png;base64,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";
+
+/* ---------- Perguntas ---------- */
+/* Partes reaproveitáveis por tipo de equipamento — o que fica em campo ao redor/dentro
+   de cada produto, com base nos exemplos do catálogo EcoFit e do material de Field Services */
+var PARTS_BY_TYPE={
+ 'Disjuntor MT':['Carrinho/chassi de extração','Cubículo (estrutura externa)','Barramentos e conexões de força','Fiação de controle e sinalização'],
+ 'Disjuntor BT':['Chassi ou base fixa','Painel onde está instalado','Fiação e cabos de força','Terminais traseiros'],
+ 'ATS':['Gabinete/estrutura','Barramentos e conexões de força','Fiação de controle'],
+ 'Relé de proteção':['Recorte/moldura no painel','Fiação de sinal e controle','TCs e TPs associados'],
+ 'Cubículo MT':['Estrutura metálica do cubículo','Barramentos','Compartimentos e isolamento','Carrinho/chassi interno'],
+ 'Transformador':['Base/fundação','Buchas e conexões de AT e BT','Sistema de refrigeração (radiadores/ventiladores)'],
+ 'Medidor':['Base/suporte de instalação','Fiação e TCs/TPs associados'],
+ 'UPS':['Gabinete/estrutura','Banco de baterias','Sistema de distribuição e bypass','Fiação e cabeamento'],
+ 'Carro extraível de média tensão':['Chassi/carrinho','Trilhos e rodas de deslocamento'],
+ 'Contator de média tensão':['Base/suporte de montagem','Fiação de força e comando'],
+ 'Contator':['Base/trilho de montagem','Fiação de comando'],
+ 'Relé de sobrecarga':['Base/suporte de montagem','Fiação de comando'],
+ 'Disjuntor-motor':['Base/trilho de montagem','Fiação de força'],
+ 'Chave seccionadora':['Estrutura de suporte','Barramentos e conexões'],
+ 'Seccionador sob carga':['Estrutura de suporte','Barramentos e conexões'],
+ 'Fusível seccionador':['Base porta-fusível','Barramentos e conexões'],
+ 'Religador':['Estrutura/poste de fixação','Barramentos e conexões','Sistema de controle associado'],
+ 'Partida de motor':['Gabinete/estrutura','Fiação de força e comando'],
+ 'Painel de baixa tensão (QGBT)':['Estrutura metálica/gabinete','Barramentos','Compartimentos','Cabeamento interno'],
+ 'Centro de controle de motores (CCM)':['Estrutura metálica/gabinete','Barramentos','Gavetas/compartimentos','Cabeamento interno'],
+ 'Quadro de distribuição (QDF)':['Estrutura metálica/gabinete','Barramentos','Cabeamento interno'],
+ 'Barramento blindado':['Estrutura de suporte','Isolação e juntas'],
+ 'Painel de correção de fator de potência':['Estrutura/gabinete','Barramentos','Contatores e reatores existentes'],
+ 'Painel de comando e automação':['Estrutura/gabinete','Cabeamento interno','IHM existente'],
+ 'Banco de capacitores':['Estrutura/gabinete','Barramentos e conexões'],
+ 'Filtro de harmônicas':['Estrutura/gabinete','Barramentos e conexões'],
+ 'Reator':['Base/fundação','Conexões de força'],
+ 'Transformador de instrumento (TC ou TP)':['Base/suporte de instalação','Fiação de sinal'],
+ 'Analisador de qualidade de energia':['Base/suporte de instalação','Fiação de sinal'],
+ 'Sistema de detecção de arco elétrico':['Sensores e cabos ópticos existentes','Fiação de sinal'],
+ 'Sistema de automação de subestação':['Rede de comunicação existente','Servidores/estações existentes','Cabeamento'],
+ 'Gerador':['Base/fundação','Tanque de combustível','Quadro de transferência associado'],
+ 'Chave de transferência estática (STS)':['Gabinete/estrutura','Barramentos e conexões'],
+ 'Banco de baterias':['Rack/estante existente','Cabeamento de interligação'],
+ 'Retificador ou carregador de baterias':['Gabinete/estrutura','Fiação de força'],
+ 'PDU (unidade de distribuição de energia)':['Gabinete/estrutura','Barramentos e disjuntores de saída'],
+ 'Ar condicionado de precisão':['Estrutura/gabinete','Tubulação e dutos existentes'],
+ 'CLP (controlador lógico programável)':['Base/trilho DIN','Fiação de campo (entradas e saídas)'],
+ 'Inversor de frequência':['Gabinete onde está instalado','Fiação de força e comando'],
+ 'Soft-starter':['Gabinete onde está instalado','Fiação de força'],
+ 'Servoacionamento (servo drive)':['Gabinete onde está instalado','Cabeamento de encoder e potência'],
+ 'IHM (interface homem-máquina)':['Recorte/moldura no painel','Cabeamento de comunicação'],
+ 'Sistema de controle distribuído (SDCD)':['Rede de comunicação existente','Servidores/estações existentes'],
+ 'Fonte de alimentação 24 Vcc':['Base/trilho DIN','Fiação'],
+ 'Sensor ou instrumento de campo':['Suporte de instalação existente','Fiação de sinal']
+};
+function partsFor(a){
+  var ty=typeOf(a);
+  var base=PARTS_BY_TYPE[ty]||['Estrutura/gabinete existente','Fiação e conexões existentes'];
+  return base.concat(['Outro',PARTES_NONE]);
+}
+
+var YN=['Sim','Não'], YNK=['Sim','Não','Não sei'];
+/* Equipamentos que reúnem vários componentes internos — só estes recebem a pergunta sobre onde o problema está concentrado */
+var MULTI_COMPONENT_TYPES=['Cubículo MT','Painel de baixa tensão (QGBT)','Centro de controle de motores (CCM)','Quadro de distribuição (QDF)','Painel de correção de fator de potência','Painel de comando e automação','Sistema de automação de subestação','Sistema de controle distribuído (SDCD)','UPS'];
+function typeOf(a){return a.equip==='Outro'?(a.equipOutro||''):(a.equip||'');}
+var STEPS=[
+ {short:'Equipamento',title:'Identificação do equipamento',intro:'Comece pelo ativo que o cliente quer avaliar.',qs:[
+  {id:'cliente',type:'text',label:'Cliente ou oportunidade',placeholder:'Ex.: Planta Campinas',optional:true},
+  {id:'equip',type:'single',label:'Qual equipamento está sendo avaliado?',opts:['Disjuntor MT','Disjuntor BT','ATS','Relé de proteção','Cubículo MT','Transformador','Medidor','UPS','Outro'],grid:true,
+   sub:{'Disjuntor MT':'Evolis, EvoPacT, HVX','Disjuntor BT':'Masterpact, Compact, EasyPact','ATS':'TransferPacT','Relé de proteção':'Sepam, Easergy, VAMP','Cubículo MT':'MCset, SM6, Premset','Transformador':'Trihal','Medidor':'PowerLogic','UPS':'Galaxy, Symmetra, Easy UPS'}},
+  {id:'equipOutro',type:'combo',label:'Qual outro equipamento?',placeholder:'Buscar tipo de equipamento',optional:true,showIf:function(a){return a.equip==='Outro';}},
+  {id:'fab',type:'maker',label:'Qual o fabricante atual?'},
+  {id:'modelo',type:'combo',label:'Qual o modelo?',placeholder:'Buscar modelo (ex.: Masterpact NW, Sepam série 40)',optional:true,hint:'"Descontinuado" = esse modelo não é mais vendido; a nota explica o que a Schneider oferece no lugar.'},
+  {id:'idade',type:'single',label:'Qual o ano aproximado de instalação?',opts:['Menos de 10 anos','Entre 10 e 15 anos','Entre 15 e 20 anos','Mais de 20 anos','Não sei']},
+  {id:'obs',type:'textarea',label:'Alguma observação sobre o cliente?',placeholder:'O que ele comentou, uma restrição específica, ou se alguma oferta anterior não fez sentido para ele.',optional:true}
+ ]},
+ {short:'Condição',title:'Condição do ativo',intro:'O que o cliente já percebeu no dia a dia do equipamento.',qs:[
+  {id:'desgaste',type:'single',label:'O equipamento apresenta sinais de desgaste?',opts:YNK},
+  {id:'falhas',type:'single',label:'Existem falhas ou interrupções recorrentes nos últimos anos?',opts:YN},
+  {id:'pecas',type:'single',label:'Existem dificuldades para encontrar peças de reposição?',opts:YNK},
+  {id:'obsolescencia',type:'single',label:'O cliente mencionou preocupação com obsolescência?',opts:YN}
+ ]},
+ {short:'Impacto',title:'Impacto no negócio',intro:'O que está em jogo para o cliente se o equipamento falhar.',qs:[
+  {id:'impacto',type:'single',label:'Qual seria o impacto se este equipamento falhasse amanhã?',opts:['Baixo','Médio','Alto','Crítico']},
+  {id:'restricao',type:'single',label:'Existe restrição para desligamento da instalação?',opts:YN},
+  {id:'estrategico',type:'single',label:'O equipamento é considerado estratégico para a operação?',opts:YN},
+  {id:'contrato',type:'single',label:'O cliente já tem contrato de serviço recorrente com a Schneider?',hint:'Ex.: manutenção programada, EcoCare. Serve de contexto para a conversa — ainda vamos falar mais sobre serviços digitais.',opts:YNK}
+ ]},
+ {short:'Modernização',title:'Potencial de modernização',intro:'Avalie se dá para atualizar em vez de trocar.',qs:[
+  {id:'atende',type:'single',label:'O equipamento ainda atende a necessidade operacional?',opts:['Sim','Não','Parcialmente']},
+  {id:'estrutura',type:'single',label:'A estrutura física está preservada?',hint:'Exemplos: estrutura metálica, cubículo, compartimentos, painel.',opts:YNK},
+  {id:'problema',type:'single',label:'O problema parece concentrado em alguns componentes do conjunto?',hint:'Exemplos: um disjuntor específico, um relé, o sistema de controle, comunicação, sensores. Só se aplica a equipamentos com vários componentes internos.',opts:YNK,showIf:function(a){return MULTI_COMPONENT_TYPES.indexOf(typeOf(a))>-1;}}
+ ]},
+ {short:'Reaproveitamento',title:'Potencial de reaproveitamento',intro:'O que dá para aproveitar e o que o cliente prioriza.',qs:[
+  {id:'reaproveitar',type:'single',label:'Existe potencial de reaproveitar parte do equipamento?',opts:YNK},
+  {id:'partes',type:'multi',label:'Quais partes podem ser reaproveitadas?',hint:'Escolha pelo menos uma opção. Se nada será reaproveitado, marque a última.'},
+  {id:'evitar',type:'single',label:'O cliente gostaria de evitar a substituição completa?',opts:YNK}
+ ]},
+ {short:'Diagnóstico',title:'Necessidade de diagnóstico',intro:'Confirme se já existem dados para decidir.',qs:[
+  {id:'condicao',type:'single',label:'Você já sabe a condição real do equipamento, ou é uma estimativa?',hint:'Isso é sobre o seu conhecimento técnico da situação, não o do cliente.',opts:YN},
+  {id:'duvidas',type:'single',label:'O cliente demonstrou dúvida ou insegurança sobre esse equipamento?',hint:'Isso é sobre o que o cliente comentou ou perguntou, não a sua avaliação.',opts:YN},
+  {id:'recusa',type:'multi',label:'O cliente já disse que não quer alguma destas opções?',hint:'Escolha pelo menos uma opção. Marque só o que ele recusou de forma explícita — o diagnóstico deixa de sugerir essa opção. Se ele não recusou nada ainda, marque a última.',opts:['EcoFit / modernização','Retrofit','ProDiag / diagnóstico','Substituição completa','Nenhuma recusa até agora']}
+ ]}
+];
+
+/* ---------- Estado ---------- */
+function todayISO(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fmtDateBR(iso){if(!iso) return '';var p=iso.split('-');if(p.length!==3) return '';return p[2]+'/'+p[1]+'/'+p[0];}
+function newState(){return {view:'form',step:0,max:0,a:{partes:[]},mail:{kind:'visita',contact:'',contactEmail:'',seller:'',subject:'',body:'',edited:false,date:todayISO(),update:''},suggestDismissed:{}};}
+var state=newState();
+var app=document.getElementById('app');
+var toastEl=document.getElementById('toast');
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function lowerFirst(s){return s.charAt(0).toLowerCase()+s.slice(1);}
+function joinPt(arr){return arr.length<2?arr.join(''):arr.slice(0,-1).join(', ')+' e '+arr[arr.length-1];}
+function reduceMotion(){return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
+
+/* ---------- Motor de análise ---------- */
+var PARTES_NONE='Nenhuma — não vamos reaproveitar nada';
+var RECUSA_NONE='Nenhuma recusa até agora';
+
+/* Sugestões a partir de texto livre (observação do cliente / atualização do caso).
+   Regras simples de palavra-chave + negação — nunca age sozinho, só sugere; o vendedor
+   confirma com um clique. Se o texto não bater com nenhum padrão, nada aparece. */
+var SUGGEST_RULES=[
+ {key:'eco',label:'EcoFit / modernização',
+   neg:/n[ãa]o\s+(quer|topa|aceita|deseja|precisa)(\s+\S+){0,4}\s*(ecofit|moderniza)/i,
+   pos:/\b(quer|topa|aceita|deseja|interessad[oa])\b(\s+\S+){0,4}\s*(ecofit|moderniza)/i},
+ {key:'retrofit',label:'Retrofit',
+   neg:/n[ãa]o\s+(quer|topa|aceita|deseja|precisa)(\s+\S+){0,4}\s*retrofit/i,
+   pos:/\b(quer|topa|aceita|deseja|interessad[oa])\b(\s+\S+){0,4}\s*retrofit/i},
+ {key:'prodiag',label:'ProDiag / diagnóstico',
+   neg:/n[ãa]o\s+(quer|topa|aceita|deseja|precisa)(\s+\S+){0,4}\s*(prodiag|diagn[oó]stico)/i,
+   pos:/\b(quer|topa|aceita|deseja|interessad[oa])\b(\s+\S+){0,4}\s*(prodiag|diagn[oó]stico)/i},
+ {key:'sub',label:'Substituição completa',
+   neg:/n[ãa]o\s+(quer|topa|aceita|deseja|precisa)(\s+\S+){0,4}\s*(substitui|troca\s+completa|trocar\s+tudo)/i,
+   pos:/\b(quer|topa|aceita|deseja|interessad[oa])\b(\s+\S+){0,4}\s*(substitui|troca\s+completa|trocar\s+tudo)/i}
+];
+function scanSuggestions(text){
+  var out=[];
+  if(!text) return out;
+  SUGGEST_RULES.forEach(function(r){
+    if(r.neg.test(text)) out.push({key:r.key,label:r.label,action:'add'});
+    else if(r.pos.test(text)) out.push({key:r.key,label:r.label,action:'remove'});
+  });
+  return out;
+}
+function pendingSuggestions(text,source){
+  var all=scanSuggestions(text);
+  var recusa=state.a.recusa||[];
+  return all.filter(function(s){
+    var already=recusa.indexOf(s.label)>-1;
+    if(s.action==='add'&&already) return false;
+    if(s.action==='remove'&&!already) return false;
+    return !state.suggestDismissed[source+':'+s.key+':'+s.action];
+  });
+}
+function suggestBoxWrap(text,source){
+  return '<div id="suggest-'+source+'">'+suggestionChipsHtml(text,source)+'</div>';
+}
+function refreshSuggestBox(source,text){
+  var el=document.getElementById('suggest-'+source);
+  if(el) el.outerHTML=suggestBoxWrap(text,source);
+}
+function suggestionChipsHtml(text,source){
+  var sug=pendingSuggestions(text,source);
+  if(!sug.length) return '';
+  return '<div class="suggest-box">'+sug.map(function(s){
+    var verb=s.action==='add'?'Marcar recusa':'Remover recusa';
+    var msg=s.action==='add'?('Pelo texto, o cliente parece não querer '+s.label+'.'):('Pelo texto, o cliente parece ter mudado de ideia sobre '+s.label+'.');
+    return '<div class="suggest-chip"><span>'+esc(msg)+'</span><span class="suggest-actions">'+
+      '<button type="button" class="btn primary sm" data-act="apply-suggest" data-source="'+source+'" data-key="'+s.key+'" data-mode="'+s.action+'">'+verb+'</button>'+
+      '<button type="button" class="btn sm" data-act="dismiss-suggest" data-source="'+source+'" data-key="'+s.key+'" data-mode="'+s.action+'">Ignorar</button>'+
+      '</span></div>';
+  }).join('')+'</div>';
+}
+/* Tipos cobertos pelo catálogo EcoFit Life Extension Advanced 2026 (seções de média/baixa tensão,
+   transformadores, relés de proteção e automação de subestação). Fora dessa lista, ainda não temos
+   fonte documentada de que existe uma oferta EcoFit — a ferramenta evita afirmar que existe. */
+var ECOFIT_SCOPE=['Disjuntor MT','Disjuntor BT','ATS','Relé de proteção','Cubículo MT','Transformador',
+ 'Carro extraível de média tensão','Contator de média tensão','Contator','Relé de sobrecarga','Disjuntor-motor',
+ 'Chave seccionadora','Seccionador sob carga','Fusível seccionador','Religador','Partida de motor',
+ 'Painel de baixa tensão (QGBT)','Centro de controle de motores (CCM)','Quadro de distribuição (QDF)',
+ 'Barramento blindado','Painel de correção de fator de potência','Sistema de automação de subestação'];
+/* Particularidades confirmadas em material da Schneider (apresentação Field Services Brasil) — só
+   entra aqui o que tem fonte; os demais produtos ficam sem essa seção em vez de um texto inventado. */
+var PARTICULARIDADES={
+ 'Disjuntor BT':{stays:'O painel onde o disjuntor está instalado continua o mesmo — a troca não muda a aparência nem o layout da instalação.',why:'O cliente troca porque não encontra mais peça de reposição ou quer as funções de proteção mais novas, não porque o painel ficou ruim.'},
+ 'Disjuntor MT':{stays:'O cubículo e a estrutura externa continuam os mesmos — só o disjuntor e o carrinho de extração são trocados.',why:'A troca costuma acontecer por falta de peça de reposição ou risco de segurança do equipamento antigo, não porque a cabine precisa mudar.'},
+ 'Relé de proteção':{stays:'O recorte no painel e a fiação de sinal continuam os mesmos — os ajustes do relé antigo são convertidos por software para o novo.',why:'O cliente troca por funções de proteção mais modernas (cibersegurança, comunicação remota) ou porque o relé antigo perdeu suporte, não por causa do painel.'}
+};
+/* Por que este diagnóstico — motivos em linguagem simples, para o vendedor explicar ao cliente */
+function motivosList(A){
+  var L=situacaoList(A).slice();
+  function is(k,v){return A[k]===v;}
+  if(is('atende','Sim')) L.push('o equipamento ainda atende bem a operação hoje');
+  else if(is('atende','Parcialmente')) L.push('o equipamento atende só parcialmente a necessidade atual');
+  else if(is('atende','Não')) L.push('o equipamento não atende mais a necessidade da operação');
+  if(is('estrutura','Sim')) L.push('a estrutura física está preservada');
+  else if(is('estrutura','Não')) L.push('a estrutura física já está comprometida');
+  if(is('evitar','Sim')) L.push('o cliente quer evitar a troca completa');
+  if(is('contrato','Sim')) L.push('já existe contrato de serviço recorrente com a Schneider');
+  return L;
+}
+function analyze(A){
+  function is(k,v){return A[k]===v;}
+  var ageMap={'Menos de 10 anos':0,'Entre 10 e 15 anos':1,'Entre 15 e 20 anos':2,'Mais de 20 anos':3};
+  var ageIdx=(A.idade in ageMap)?ageMap[A.idade]:null;
+  var ageOld=ageIdx!==null&&ageIdx>=2;
+  var partesRaw=A.partes||[];
+  var partesNone=partesRaw.indexOf(PARTES_NONE)>-1;
+  var partes=(partesNone||is('reaproveitar','Não'))?[]:partesRaw;
+  var issues=['desgaste','falhas','pecas','obsolescencia'].filter(function(k){return is(k,'Sim');}).length;
+  var me=modelEntry(A.modelo);
+  var legacyModel=!!(me&&me.tag==='Descontinuado');
+  var pressure=(ageIdx===null?1:ageIdx)+issues+(legacyModel?1:0);
+  var severe=is('obsolescencia','Sim')&&is('pecas','Sim')&&ageOld;
+  var flags6=[is('condicao','Não'),is('duvidas','Sim')].filter(Boolean).length;
+  var unknowns=[ageIdx===null,is('desgaste','Não sei'),is('pecas','Não sei'),is('estrutura','Não sei'),is('problema','Não sei'),is('reaproveitar','Não sei')].filter(Boolean).length;
+  var impHigh=A.impacto==='Alto'||A.impacto==='Crítico';
+
+  /* Substituição */
+  var subFlags=[is('estrutura','Não'),is('reaproveitar','Não'),severe,is('atende','Não')].filter(Boolean).length;
+  var subIndicated=is('estrutura','Não')||(is('reaproveitar','Não')&&(is('atende','Não')||severe))||(is('atende','Não')&&severe&&!is('estrutura','Sim'));
+  var sub=subIndicated?3:((subFlags>=2||is('atende','Não')||is('reaproveitar','Não'))?2:1);
+  var subWhy;
+  if(subIndicated){
+    var subR=[];
+    if(is('estrutura','Não')) subR.push('a estrutura física já está comprometida');
+    if(is('reaproveitar','Não')&&is('atende','Não')) subR.push('não há nada para reaproveitar e o equipamento não atende mais a operação');
+    else if(is('reaproveitar','Não')&&severe) subR.push('não há nada para reaproveitar e o ativo já está obsoleto, com peças difíceis de achar');
+    if(is('atende','Não')&&severe&&!is('estrutura','Sim')&&!subR.length) subR.push('o equipamento não atende mais a operação e já está obsoleto, sem confirmação de que a estrutura esteja preservada');
+    subWhy='Alto porque '+(subR.length?subR.join('; e '):'a estrutura ou a operação já não sustentam o equipamento')+'.';
+  }else if(sub===2){
+    var subR2=[];
+    if(is('atende','Não')) subR2.push('o equipamento não atende mais a operação');
+    if(is('reaproveitar','Não')) subR2.push('não há nada identificado para reaproveitar');
+    if(!subR2.length) subR2.push('mais de um sinal de risco apareceu (estrutura, reaproveitamento, obsolescência ou idade)');
+    subWhy='Médio porque '+subR2.join(' e ')+', mas não o bastante para indicar a troca com clareza.';
+  }else{
+    subWhy='Baixo porque a estrutura está preservada e não há sinais fortes de que o equipamento precise ser todo substituído.';
+  }
+
+  /* EcoFit */
+  var ecoCrit=[ageOld,is('estrutura','Sim'),(is('reaproveitar','Sim')||partes.length>0),is('evitar','Sim'),is('atende','Sim')];
+  var c=ecoCrit.filter(Boolean).length;
+  var eco;
+  if(is('estrutura','Não')) eco=1;
+  else if(is('estrutura','Sim')&&is('atende','Sim')&&ageOld&&ecoCrit[2]&&!is('evitar','Não')) eco=3;
+  else eco=(c>=3&&pressure>=2)?2:1;
+  var ecoWhy;
+  if(is('estrutura','Não')){
+    ecoWhy='Baixo porque a estrutura física não está preservada — sem uma base física para manter, não há o que modernizar com o EcoFit.';
+  }else if(eco===3){
+    ecoWhy='Alto porque a estrutura está preservada, o equipamento ainda atende à operação, é antigo o bastante para valer a pena modernizar, há algo para reaproveitar e o cliente não rejeitou evitar a troca completa.';
+  }else if(eco===2){
+    ecoWhy='Médio: vários sinais são favoráveis, mas falta força (idade, uso atual ou intenção do cliente) para ser Alto.';
+  }else{
+    var ecoMiss=[];
+    if(!ageOld) ecoMiss.push('o equipamento ainda não é antigo o bastante');
+    if(!is('estrutura','Sim')) ecoMiss.push('a estrutura ainda não foi confirmada como preservada');
+    if(!(is('reaproveitar','Sim')||partes.length>0)) ecoMiss.push('não foi identificado o que reaproveitar');
+    if(is('evitar','Não')) ecoMiss.push('o cliente não demonstrou querer evitar a troca completa');
+    if(!is('atende','Sim')) ecoMiss.push('o equipamento não atende mais bem a operação');
+    ecoWhy='Baixo porque '+(ecoMiss.length?ecoMiss.join('; '):'faltam sinais suficientes para indicar potencial')+'.';
+  }
+
+  /* Retrofit */
+  var r=0;
+  if(!is('estrutura','Não')){
+    r+=is('estrutura','Sim')?2:1;
+    r+=is('atende','Parcialmente')?2:(is('atende','Não')?1:0);
+    r+=is('problema','Sim')?2:(is('problema','Não sei')?1:0);
+    r+=pressure>=3?1:0;
+    r+=is('reaproveitar','Sim')?1:0;
+  }
+  var retro=r>=6?3:(r>=4?2:1);
+  var retroWhy;
+  if(is('estrutura','Não')){
+    retroWhy='Baixa porque a estrutura comprometida inviabiliza o retrofit — sem estrutura para manter, não há o que atualizar.';
+  }else{
+    var retroC=[];
+    if(is('estrutura','Sim')) retroC.push('a estrutura está preservada');
+    if(is('atende','Parcialmente')) retroC.push('o equipamento atende só parcialmente');
+    else if(is('atende','Não')) retroC.push('o equipamento não atende mais bem');
+    if(is('problema','Sim')) retroC.push('o problema está concentrado em poucos componentes');
+    else if(is('problema','Não sei')) retroC.push('ainda não se sabe onde está o problema');
+    if(pressure>=3) retroC.push('há bastante idade/desgaste acumulado');
+    if(is('reaproveitar','Sim')) retroC.push('há potencial de reaproveitamento');
+    if(retro===3) retroWhy='Alta porque '+retroC.join(', ')+' — vários sinais juntos apontam para um retrofit bem direcionado.';
+    else if(retro===2) retroWhy='Média porque '+(retroC.length?retroC.join(', '):'alguns sinais apareceram')+', mas ainda não o bastante para ser Alta.';
+    else retroWhy='Baixa porque poucos sinais apontam para retrofit'+(retroC.length?' (só: '+retroC.join(', ')+')':'')+'.';
+  }
+
+  /* Resultado principal — respeita o que o cliente já recusou explicitamente */
+  var inScope=ECOFIT_SCOPE.indexOf(typeOf(A))>-1;
+  var EXCL_MAP={'EcoFit / modernização':'eco','Retrofit':'retrofit','ProDiag / diagnóstico':'prodiag','Substituição completa':'sub'};
+  var excluded=(A.recusa||[]).map(function(x){return EXCL_MAP[x];}).filter(Boolean);
+  function notExcl(k){return excluded.indexOf(k)<0;}
+  var candidates=[];
+  if(subIndicated&&notExcl('sub')) candidates.push('sub');
+  if(flags6===2&&notExcl('prodiag')) candidates.push('prodiag');
+  if(eco===3){
+    var ecoPick=inScope?'eco':(retro>=2?'retrofit':'foraCatalogo');
+    if(notExcl(ecoPick)) candidates.push(ecoPick);
+  }
+  if(((retro>=2&&(pressure>=2||!is('atende','Sim')))||is('atende','Parcialmente'))&&notExcl('retrofit')) candidates.push('retrofit');
+  if(pressure>=3&&notExcl('prodiag')) candidates.push('prodiag');
+  candidates.push('nutrir');
+  var key=candidates[0];
+
+  /* ProDiag */
+  var pd=1;
+  if(key==='prodiag') pd=flags6>=2?3:2;
+  else if(key==='retrofit') pd=2;
+  else if(flags6>=1||is('estrutura','Não sei')||unknowns>=2) pd=2;
+  var pdWhy;
+  if(pd===3){
+    pdWhy='Necessário porque você ainda não sabe a condição real do equipamento e o cliente também demonstrou dúvida — hoje a decisão seria no escuro.';
+  }else if(pd===2){
+    var pdR=[];
+    if(key==='retrofit') pdR.push('um retrofit bem direcionado depende de confirmar a condição real do ativo');
+    if(flags6>=1) pdR.push('falta confirmar a condição do ativo ou ficou uma dúvida do cliente em aberto');
+    if(is('estrutura','Não sei')) pdR.push('a estrutura ainda não foi avaliada');
+    if(unknowns>=2&&!pdR.length) pdR.push('há várias respostas "não sei" no checklist');
+    pdWhy='Recomendado porque '+(pdR.length?pdR.join('; e '):'ainda há pontos incertos')+'.';
+  }else{
+    pdWhy='Opcional porque a condição do ativo já está razoavelmente clara pelas respostas dadas.';
+  }
+
+  /* Reaproveitamento */
+  var reuse;
+  if(partesNone||is('estrutura','Não')||is('reaproveitar','Não')) reuse='Baixo ou inexistente';
+  else if(is('estrutura','Sim')&&(is('reaproveitar','Sim')||partes.length)) reuse='Sim'+(partes.length?': '+partes.join(', ').toLowerCase():'');
+  else reuse='A confirmar com o especialista';
+
+  var CONTENT={
+    eco:{title:'Alto potencial para EcoFit',
+      msg:'Este ativo apresenta forte potencial para modernização através do EcoFit.',
+      need:'O cliente quer manter a operação funcionando com o mínimo de investimento e de tempo parado, sem abrir mão de segurança — não precisa trocar tudo, só o que já está desgastado.',
+      benefits:['Investimento menor que uma troca completa: você mostra economia de CAPEX sem abrir mão de qualidade, o que ajuda quando o orçamento do cliente é o obstáculo.',
+       'Menos tempo de parada: como boa parte da estrutura é reaproveitada, a intervenção costuma ser mais rápida que uma obra de substituição — use isso para reduzir a objeção de "não posso desligar a planta".',
+       'Vida útil estendida com tecnologia atual: o cliente moderniza a proteção e o controle sem esperar o orçamento de uma troca completa ser aprovado.',
+       'Argumento de sustentabilidade: menos resíduo e menos consumo de matéria-prima que uma substituição total — útil se o cliente tem metas de ESG.'],
+      next:['Propor o EcoFit ao cliente','Envolver o Especialista de Modernização','Oferecer o ProDiag se a condição real ainda precisar ser confirmada'],
+      expert:'Especialista de Modernização'},
+    retrofit:{title:'Potencial para retrofit',
+      msg:'Existe potencial para retrofit parcial e atualização tecnológica.',
+      need:'O cliente precisa resolver um problema específico — proteção, controle ou comunicação desatualizados — sem reformar a instalação inteira.',
+      benefits:['Resolve o problema específico (proteção, controle ou comunicação) sem reformar a instalação inteira — você foca a proposta no que realmente incomoda o cliente.',
+       'Atualiza a tecnologia de proteção e controle para o padrão atual, o que ajuda a justificar o investimento por segurança, não só por estética.',
+       'Investimento e prazo menores que uma substituição completa — bom argumento se o cliente já sinalizou pressa ou orçamento limitado.'],
+      next:['Propor o retrofit','Agendar uma avaliação técnica','Incluir o ProDiag para validar a condição do ativo'],
+      expert:'Especialista de Modernização, para a avaliação técnica'},
+    prodiag:{title:'ProDiag recomendado',
+      msg:'Antes de definir uma estratégia de modernização ou substituição, recomenda-se realizar um diagnóstico especializado dos ativos.',
+      need:'Antes de qualquer decisão, é preciso ter dados confiáveis sobre o estado real do equipamento — hoje a decisão estaria sendo tomada no escuro.',
+      benefits:['Dá segurança técnica para a sua proposta: você chega com dados do próprio ativo, não com uma estimativa genérica.',
+       'Reduz o risco de oferecer a solução errada (e de o cliente descobrir isso depois de fechar) — protege a sua credibilidade com ele.',
+       'Abre naturalmente a porta para a conversa de modernização: depois do diagnóstico, é você quem já está na mesa para propor o próximo passo.'],
+      next:['Propor o ProDiag','Envolver o Especialista Schneider'],
+      expert:'Especialista Schneider, para conduzir o diagnóstico'},
+    sub:{title:'Avaliar substituição completa',
+      msg:'A substituição completa pode representar a solução mais adequada para garantir confiabilidade e segurança.',
+      need:'A estrutura ou a tecnologia atual já não sustentam mais a operação com segurança — o cliente precisa de um ativo novo, não de um reparo.',
+      benefits:['Argumento de segurança e confiabilidade: quando a estrutura já está comprometida, reforçar o risco de continuar operando ajuda a justificar o investimento maior.',
+       'Suporte e peças garantidos com equipamento atual — elimina a dor recorrente de não achar peça de reposição.'],
+      next:['Propor a renovação','Estruturar o projeto de substituição','Envolver o Especialista Schneider'],
+      expert:'Especialista Schneider, para o projeto de substituição'},
+    nutrir:{title:'Sem urgência identificada',
+      msg:'As respostas não indicam necessidade imediata. Vale manter o relacionamento e acompanhar o ativo.',
+      need:'Não há uma dor imediata a resolver agora. O valor aqui é manter relacionamento e visibilidade, para estar pronto quando isso mudar.',
+      benefits:['Mantém você no radar do cliente para quando a necessidade aparecer — sem essa avaliação, você não teria motivo para voltar a falar com ele agora.',
+       'Mostra cuidado e conhecimento técnico, sem parecer forçar uma venda que ele ainda não precisa — isso constrói confiança para a próxima oportunidade.'],
+      next:['Registrar o ativo e as informações levantadas','Combinar uma nova conversa de acompanhamento','Envolver o especialista Schneider se o cenário mudar'],
+      expert:'Nenhum por enquanto. Envolver o especialista Schneider se o cenário mudar'},
+    foraCatalogo:{title:'Fora do catálogo EcoFit documentado',
+      msg:'O catálogo EcoFit que recebemos cobre média/baixa tensão, transformadores, relés de proteção e automação de subestação. Este equipamento não está nele.',
+      need:'Confirmar com o especialista Schneider qual programa de modernização existe para este tipo de equipamento — pode não ser o EcoFit.',
+      benefits:['Mostra que você pesquisou antes de empurrar uma oferta genérica — passa profissionalismo mesmo sem ter a resposta pronta na hora.',
+       'Abre espaço para o especialista indicar o programa certo, e você continua sendo o ponto de contato do cliente durante esse processo.'],
+      next:['Consultar o especialista Schneider sobre a oferta aplicável a este equipamento','Oferecer o ProDiag se a condição real ainda não for conhecida'],
+      expert:'Especialista Schneider'}
+  };
+  var C=CONTENT[key];
+  var next=C.next.slice();
+  if(key==='prodiag'&&(eco>=2||retro>=2)) next.push('Registrar que já há sinais de potencial EcoFit ou retrofit, para confirmar o escopo depois do diagnóstico');
+  if(excluded.length){
+    var EXCL_KW={eco:['ecofit','moderniza'],retrofit:['retrofit'],prodiag:['prodiag','diagnóstic'],sub:['substitui','renova']};
+    var stripFn=function(txt){
+      var low=txt.toLowerCase();
+      return excluded.some(function(ex){return (EXCL_KW[ex]||[]).some(function(kw){return low.indexOf(kw)>-1;});});
+    };
+    next=next.filter(function(n){return !stripFn(n);});
+  }
+
+  /* Segundo potencial a considerar, além do principal */
+  var secKey=null;
+  if(key==='eco'){ if(retro>=2&&notExcl('retrofit')) secKey='retrofit'; else if(pd>=2&&notExcl('prodiag')) secKey='prodiag'; }
+  else if(key==='retrofit'){ if(inScope&&eco>=2&&notExcl('eco')) secKey='eco'; else if(pd>=2&&notExcl('prodiag')) secKey='prodiag'; }
+  else if(key==='prodiag'){ if(inScope&&eco>=2&&notExcl('eco')) secKey='eco'; else if(retro>=2&&notExcl('retrofit')) secKey='retrofit'; }
+  else if(key==='sub'){ if(pd>=2&&notExcl('prodiag')) secKey='prodiag'; }
+  else if(key==='foraCatalogo'){ if(retro>=2&&notExcl('retrofit')) secKey='retrofit'; else if(pd>=2&&notExcl('prodiag')) secKey='prodiag'; }
+  var secC=secKey?CONTENT[secKey]:null;
+
+  /* Especialista: sinaliza porte/criticidade em vez de inventar um cargo específico */
+  var expert=C.expert+(A.impacto==='Crítico'?' — pelo porte/criticidade, vale levar um especialista sênior.':'');
+
+  /* Particularidade do produto (só quando há fonte confirmada) */
+  var part=PARTICULARIDADES[typeOf(A)]||null;
+
+  /* Pontos a confirmar */
+  var gaps=[];
+  if(ageIdx===null) gaps.push('Confirmar o ano de instalação (placa de identificação ou documentação do ativo).');
+  if(is('desgaste','Não sei')) gaps.push('Verificar sinais de desgaste em visita ou com a manutenção do cliente.');
+  if(is('pecas','Não sei')) gaps.push('Consultar a disponibilidade de peças de reposição.');
+  if(is('estrutura','Não sei')) gaps.push('Confirmar o estado da estrutura física (cubículo, compartimentos, painel).');
+  if(is('problema','Não sei')) gaps.push('Identificar se o problema está concentrado em poucos componentes.');
+  if(is('reaproveitar','Não sei')) gaps.push('Avaliar o potencial de reaproveitamento com o especialista.');
+  if(is('evitar','Não sei')) gaps.push('Perguntar ao cliente se ele quer evitar a substituição completa.');
+  if(!inScope&&(key==='foraCatalogo'||key==='retrofit'||key==='eco')) gaps.push('Este tipo de equipamento não consta no catálogo EcoFit que recebemos — confirme com o especialista qual oferta se aplica.');
+  if(excluded.length) gaps.unshift('O cliente já descartou: '+A.recusa.join(', ')+'. Este diagnóstico já não considera essas opções.');
+
+  var fabT=(A.fab||'').trim();
+  if(fabT){
+    if(fabT==='Schneider Electric'){
+      if(!(me&&me.note)&&(key==='eco'||key==='retrofit'||key==='prodiag')) gaps.push('Consultar com o especialista o ciclo de vida do modelo (descontinuação e disponibilidade de peças).');
+    }else if(key==='eco'||key==='retrofit'||key==='sub'){
+      gaps.push('Confirmar com o Especialista de Modernização a solução para o modelo do fabricante '+fabT+' (o EcoFit também atende equipamentos de outras marcas).');
+    }
+  }
+
+  if(me&&me.note) gaps.unshift('Modelo '+me.n+': '+me.note);
+
+  return {key:key,C:C,next:next,eco:eco,retro:retro,pd:pd,sub:sub,reuse:reuse,gaps:gaps,flags6:flags6,secKey:secKey,secC:secC,expert:expert,part:part,inScope:inScope,reasons:motivosList(A),why:{eco:ecoWhy,retro:retroWhy,pd:pdWhy,sub:subWhy}};
+}
+
+var LV={
+  eco:{1:'Baixo',2:'Médio',3:'Alto'},
+  retro:{1:'Baixa',2:'Média',3:'Alta'},
+  pd:{1:'Opcional',2:'Recomendado',3:'Necessário'},
+  sub:{1:'Improvável',2:'A avaliar',3:'Indicada'}
+};
+
+function equipLabel(A){
+  var e=A.equip==='Outro'&&A.equipOutro&&A.equipOutro.trim()?A.equipOutro.trim():(A.equip||'Equipamento');
+  return e;
+}
+function identLine(A){
+  var parts=[];
+  if(A.cliente&&A.cliente.trim()) parts.push(A.cliente.trim());
+  parts.push(ativoDesc(A));
+  var ageTxt={'Menos de 10 anos':'menos de 10 anos','Entre 10 e 15 anos':'10 a 15 anos','Entre 15 e 20 anos':'15 a 20 anos','Mais de 20 anos':'mais de 20 anos'};
+  if(ageTxt[A.idade]) parts.push('instalado há '+ageTxt[A.idade]);
+  return parts.join(', ');
+}
+
+/* ---------- Renderização: formulário ---------- */
+function headerHtml(){
+  return '<header class="top"><div class="logo"><img src="'+LOGO+'" alt="Schneider Electric" width="107" height="40"></div>'+
+  '<div><h1>EcoFit Opportunity Assistant</h1><p>Qualifique a oportunidade junto com o cliente, em 6 etapas.</p></div></header>';
+}
+function stepperHtml(){
+  var out='<ol class="stepper" aria-label="Etapas">';
+  STEPS.forEach(function(s,i){
+    var cls=state.view==='result'?'done':(i<state.step?'done':(i===state.step?'current':''));
+    var can=i<=state.max;
+    out+='<li class="'+cls+'"><button type="button" data-act="goto" data-i="'+i+'"'+(can?'':' disabled')+(i===state.step&&state.view==='form'?' aria-current="step"':'')+'>'+
+      '<span class="node">'+(cls==='done'?'&#10003;':(i+1))+'</span><span class="lbl">'+esc(s.short)+'</span></button></li>';
+  });
+  return out+'</ol>';
+}
+function qHtml(q){
+  var hidden=q.showIf&&!q.showIf(state.a);
+  if(q.type==='maker') return makerHtml(q);
+  var body='';
+  if(q.type==='text'){
+    body='<input class="txt" type="text" data-text="'+q.id+'" value="'+esc(state.a[q.id]||'')+'" placeholder="'+esc(q.placeholder||'')+'" autocomplete="off" aria-labelledby="l-'+q.id+'">';
+  }else if(q.type==='textarea'){
+    body='<textarea class="txt obs" data-text="'+q.id+'" placeholder="'+esc(q.placeholder||'')+'" aria-labelledby="l-'+q.id+'">'+esc(state.a[q.id]||'')+'</textarea>';
+    if(q.id==='obs') body+=suggestBoxWrap(state.a.obs,'obs');
+  }else if(q.type==='combo'){
+    body=comboHtml(q.id,q.placeholder,state.a[q.id]||'');
+  }else{
+    var multi=q.type==='multi';
+    var opts=(q.id==='partes')?partsFor(state.a):q.opts;
+    var NONE_BY_FIELD={partes:PARTES_NONE,recusa:RECUSA_NONE};
+    var noneVal=NONE_BY_FIELD[q.id];
+    var noneChecked=noneVal&&(state.a[q.id]||[]).indexOf(noneVal)>-1;
+    body='<div class="opts'+(q.grid?' grid':'')+'" role="'+(multi?'group':'radiogroup')+'" aria-labelledby="l-'+q.id+'">';
+    opts.forEach(function(o){
+      var checked=multi?(state.a[q.id]||[]).indexOf(o)>-1:state.a[q.id]===o;
+      var isNone=noneVal&&o===noneVal;
+      var disabled=(noneVal&&noneChecked&&!isNone);
+      body+='<label class="opt'+(isNone?' opt-none':'')+'"><input type="'+(multi?'checkbox':'radio')+'" name="'+q.id+'" value="'+esc(o)+'"'+(checked?' checked':'')+(disabled?' disabled':'')+'><span>'+esc(o)+(q.sub&&q.sub[o]?'<small>'+esc(q.sub[o])+'</small>':'')+'</span></label>';
+    });
+    body+='</div>';
+    if(q.id==='recusa') body+=suggestBoxWrap(state.a.obs,'obs');
+    if(q.id==='partes'&&state.a.obs&&state.a.obs.trim()) body+='<p class="obs-echo">Lembrete do seu comentário: "'+esc(state.a.obs.trim())+'" — confira se as partes marcadas abaixo refletem isso.</p>';
+  }
+  return '<div class="q" data-q="'+q.id+'"'+(hidden?' hidden':'')+'>'+
+    '<div class="ql" id="l-'+q.id+'">'+esc(q.label)+((q.optional&&q.type!=='single')?'<span class="tag">opcional</span>':'')+'</div>'+
+    (q.hint?'<div class="hint">'+esc(q.hint)+'</div>':'')+body+
+    '<div class="err" role="alert">Escolha uma opção para continuar.</div></div>';
+}
+function renderForm(){
+  var st=STEPS[state.step];
+  var last=state.step===STEPS.length-1;
+  app.innerHTML=headerHtml()+stepperHtml()+
+   '<section class="card" aria-labelledby="stepTitle"><h2 id="stepTitle">'+esc(st.title)+'</h2><p class="intro">'+esc(st.intro)+'</p>'+
+   st.qs.map(qHtml).join('')+'</section>'+
+   '<div class="nav"><button type="button" class="btn ghost" data-act="back"'+(state.step===0?' disabled':'')+'>Voltar</button>'+
+   '<span class="count">Etapa '+(state.step+1)+' de '+STEPS.length+'</span>'+
+   '<button type="button" class="btn primary" data-act="next">'+(last?'Ver diagnóstico':'Continuar')+'</button></div>';
+}
+function updateVisibility(noFocus){
+  STEPS[state.step].qs.forEach(function(q){
+    if(!q.showIf) return;
+    var el=app.querySelector('[data-q="'+q.id+'"]');
+    if(el){var was=el.hidden;el.hidden=!q.showIf(state.a);if(was&&!el.hidden&&q.type==='combo'&&!noFocus){var ci=el.querySelector('input');if(ci) ci.focus();}}
+  });
+}
+function validateStep(){
+  var first=null;
+  STEPS[state.step].qs.forEach(function(q){
+    if(q.optional) return;
+    if(q.showIf&&!q.showIf(state.a)) return;
+    var ok;
+    if(q.type==='single') ok=!!state.a[q.id];
+    else if(q.type==='multi') ok=(state.a[q.id]||[]).length>0;
+    else return;
+    var el=app.querySelector('[data-q="'+q.id+'"]');
+    if(el) el.classList.toggle('bad',!ok);
+    if(!ok&&!first) first=el;
+  });
+  if(first){first.scrollIntoView({behavior:reduceMotion()?'auto':'smooth',block:'center'});return false;}
+  return true;
+}
+
+/* ---------- Renderização: resultado ---------- */
+function gaugeHtml(kind,name,lvl,labels,why){
+  var lamps='';
+  for(var i=1;i<=3;i++) lamps+='<i class="'+(i<=lvl?'on':'')+'"></i>';
+  return '<div class="gauge k-'+kind+'"><div class="g-name">'+esc(name)+'</div><div class="g-level">'+esc(labels[lvl])+'</div><div class="lamps" aria-hidden="true">'+lamps+'</div>'+
+    (why?'<p class="g-why">'+esc(why)+'</p>':'')+'</div>';
+}
+function renderResult(){
+  var A=state.a, R=analyze(A), C=R.C;
+  var html=headerHtml()+stepperHtml();
+  html+='<section class="verdict tone-'+R.key+'" aria-labelledby="vTitle"><p class="ctx">'+esc(identLine(A))+'</p><h2 id="vTitle">'+esc(C.title)+'</h2><p class="msg">'+esc(C.msg)+'</p></section>';
+  if(R.secC){
+    html+='<section class="verdict sec tone-'+R.secKey+'"><p class="ctx">Também vale considerar</p><h2>'+esc(R.secC.title)+'</h2><p class="msg">'+esc(R.secC.msg)+'</p></section>';
+  }
+  html+='<div class="gauges">'+
+    gaugeHtml('eco','Potencial EcoFit',R.eco,LV.eco,R.why.eco)+
+    gaugeHtml('retro','Possibilidade de retrofit',R.retro,LV.retro,R.why.retro)+
+    gaugeHtml('pd','Necessidade de ProDiag',R.pd,LV.pd,R.why.pd)+
+    gaugeHtml('sub','Substituição completa',R.sub,LV.sub,R.why.sub)+'</div>';
+
+  html+='<section class="card tight section"><h3>Resumo para a conversa</h3><dl class="facts">'+
+    '<dt>O que o cliente precisa</dt><dd>'+esc(C.need)+'</dd>'+
+    '<dt>Potencial de reaproveitamento</dt><dd>'+esc(R.reuse)+'</dd>'+
+    '<dt>Especialista a envolver</dt><dd>'+esc(R.expert)+'</dd>'+
+    (A.obs&&A.obs.trim()?'<dt>Observação sobre o cliente</dt><dd>'+esc(A.obs.trim())+'</dd>':'')+
+    '</dl>'+
+    (R.reasons.length?'<div class="why"><b>Por que este diagnóstico:</b><ul class="bul">'+R.reasons.map(function(r){return '<li>'+esc(r)+'</li>';}).join('')+'</ul></div>':'')+
+    (R.part?'<div class="why"><b>Particularidade deste equipamento:</b><p>'+esc(R.part.stays)+'</p><p>'+esc(R.part.why)+'</p></div>':'')+
+    '</section>';
+
+  html+='<section class="card tight section"><h3>Vantagens que você pode usar na conversa</h3><ul class="bul">'+C.benefits.map(function(b){return '<li>'+esc(b)+'</li>';}).join('')+'</ul></section>';
+
+  html+='<section class="card tight section"><h3>Próximas ações</h3><ul class="checks">'+
+    R.next.map(function(n){return '<li><label><input type="checkbox"><span>'+esc(n)+'</span></label></li>';}).join('')+'</ul></section>';
+
+  if(R.gaps.length){
+    html+='<section class="card tight section"><h3>Pontos a confirmar com o cliente</h3><ul class="gaps">'+
+      R.gaps.map(function(g){return '<li>'+esc(g)+'</li>';}).join('')+'</ul></section>';
+  }
+  html+=mailHtml();
+  html+='<div class="actions"><button type="button" class="btn primary" data-act="pdf" id="pdfBtn" hidden>Baixar PDF</button>'+
+    '<button type="button" class="btn" data-act="copy">Copiar resumo</button>'+
+    '<button type="button" class="btn" data-act="print" id="printBtn">Imprimir ou salvar em PDF</button>'+
+    '<button type="button" class="btn" data-act="edit">Ajustar respostas</button>'+
+    '<button type="button" class="btn ghost" data-act="restart">Nova avaliação</button></div>'+
+    '<p class="foot">O diagnóstico é uma orientação comercial baseada nas respostas do vendedor. A recomendação técnica final vem do especialista Schneider.</p>';
+  app.innerHTML=html;
+  syncActions();
+  state.R=R;state.mail.edited=false;mailFill();
+}
+function summaryText(){
+  var A=state.a, R=analyze(A), C=R.C, L=[];
+  L.push('EcoFit Opportunity Assistant');
+  L.push(identLine(A));
+  L.push('');
+  L.push('Diagnóstico: '+C.title);
+  L.push(C.msg);
+  if(R.secC){L.push('');L.push('Também vale considerar: '+R.secC.title);L.push(R.secC.msg);}
+  L.push('');
+  L.push('Potencial EcoFit: '+LV.eco[R.eco]+' — '+R.why.eco);
+  L.push('Possibilidade de retrofit: '+LV.retro[R.retro]+' — '+R.why.retro);
+  L.push('Necessidade de ProDiag: '+LV.pd[R.pd]+' — '+R.why.pd);
+  L.push('Substituição completa: '+LV.sub[R.sub]+' — '+R.why.sub);
+  L.push('Reaproveitamento: '+R.reuse);
+  L.push('O que o cliente precisa: '+C.need);
+  L.push('Especialista a envolver: '+R.expert);
+  if(A.obs&&A.obs.trim()) L.push('Observação sobre o cliente: '+A.obs.trim());
+  if(R.reasons.length){L.push('');L.push('Por que este diagnóstico:');R.reasons.forEach(function(r){L.push('- '+r);});}
+  if(R.part){L.push('');L.push('Particularidade deste equipamento:');L.push('- '+R.part.stays);L.push('- '+R.part.why);}
+  L.push('');
+  L.push('Vantagens que você pode usar na conversa:');
+  C.benefits.forEach(function(b){L.push('- '+b);});
+  L.push('');
+  L.push('Próximas ações:');
+  R.next.forEach(function(n){L.push('[ ] '+n);});
+  if(R.gaps.length){L.push('');L.push('Pontos a confirmar:');R.gaps.forEach(function(g){L.push('- '+g);});}
+  return L.join('\n');
+}
+function copyText(t){
+  function fallback(){
+    var ta=document.createElement('textarea');
+    ta.value=t;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    var ok=false;try{ok=document.execCommand('copy');}catch(e){}
+    document.body.removeChild(ta);return ok;
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(t).then(function(){return true;},function(){return fallback();});
+  }
+  return Promise.resolve(fallback());
+}
+var toastTimer;
+function toast(msg){
+  toastEl.textContent=msg;toastEl.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){toastEl.classList.remove('show');},2200);
+}
+
+
+/* ---------- PDF ---------- */
+var dl=null;
+function pdfReady(){return !!(dl&&window.jspdf&&window.jspdf.jsPDF);}
+function syncActions(){
+  var ok=pdfReady();
+  var pb=document.getElementById('pdfBtn'), rb=document.getElementById('printBtn');
+  if(pb) pb.hidden=!ok;
+  if(rb) rb.hidden=ok;
+}
+try{
+  if(window.claude&&typeof window.claude.use==='function'){
+    window.claude.use('downloads').then(function(d){dl=d;syncActions();},function(){});
+  }
+}catch(e){}
+
+function slug(t){
+  return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
+}
+function buildPdf(){
+  var A=state.a, R=analyze(A), C=R.C;
+  var doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'});
+  var PW=210, PH=297, M=16, CW=PW-2*M, y=M;
+  var INK=[15,35,24], MUTED=[79,99,87], LINE=[211,225,215];
+  var tones={eco:[0,116,42],retrofit:[10,107,74],prodiag:[13,90,95],sub:[26,77,115],nutrir:[61,74,67],foraCatalogo:[61,74,67]};
+  var lampCol={eco:[61,205,88],retro:[61,205,88],pd:[61,205,88],sub:[61,205,88]};
+  var PT=0.3528;
+  function lh(size){return size*PT*1.4;}
+  function room(h){if(y+h>PH-M-6){doc.addPage();y=M;}}
+  function setText(size,style,col){doc.setFont('helvetica',style||'normal');doc.setFontSize(size);var c=col||INK;doc.setTextColor(c[0],c[1],c[2]);}
+  function para(str,size,style,col,x,w){
+    setText(size,style,col);
+    var lines=doc.splitTextToSize(String(str),w||CW), h=lh(size);
+    lines.forEach(function(l){room(h);doc.text(l,x==null?M:x,y+size*PT);y+=h;});
+  }
+  function heading(t){y+=5;room(14);para(t,13,'bold',[0,116,42]);y+=1;}
+  function bullets(items){
+    items.forEach(function(t){
+      setText(10.5,'normal');
+      var lines=doc.splitTextToSize(String(t),CW-6), h=lh(10.5);
+      room(h);
+      doc.setFillColor(INK[0],INK[1],INK[2]);doc.circle(M+1.4,y+h*0.45,0.55,'F');
+      lines.forEach(function(l){room(h);doc.text(l,M+6,y+10.5*PT);y+=h;});
+      y+=1;
+    });
+  }
+  function checks(items){
+    items.forEach(function(t){
+      setText(10.5,'normal');
+      var lines=doc.splitTextToSize(String(t),CW-8), h=lh(10.5);
+      room(h);
+      doc.setDrawColor(INK[0],INK[1],INK[2]);doc.setLineWidth(0.3);doc.rect(M,y+0.6,3.6,3.6);
+      lines.forEach(function(l){room(h);doc.text(l,M+7,y+10.5*PT);y+=h;});
+      y+=1.2;
+    });
+  }
+
+  /* Título */
+  try{doc.addImage(LOGO,'PNG',PW-M-32,M-1,32,32*78/208);}catch(e){}
+  para('EcoFit Opportunity Assistant',18,'bold',INK,M,CW-38);
+  var ident=identLine(A);
+  if(ident) para(ident,10.5,'normal',MUTED,M,CW-38);
+  if(y<M+15) y=M+15;
+  y+=2;
+
+  /* Faixa de diagnóstico */
+  var tc=tones[R.key];
+  setText(9,'normal');
+  var tLines=(setText(22,'bold'),doc.splitTextToSize(C.title,CW-12));
+  var mLines=(setText(11,'normal'),doc.splitTextToSize(C.msg,CW-12));
+  var bh=6+tLines.length*lh(22)+2+mLines.length*lh(11)+6;
+  room(bh);
+  doc.setFillColor(tc[0],tc[1],tc[2]);doc.roundedRect(M,y,CW,bh,3,3,'F');
+  var by=y+6;
+  setText(22,'bold',[255,255,255]);
+  tLines.forEach(function(l){doc.text(l,M+6,by+22*PT);by+=lh(22);});
+  by+=2;
+  setText(11,'normal',[255,255,255]);
+  mLines.forEach(function(l){doc.text(l,M+6,by+11*PT);by+=lh(11);});
+  y+=bh+5;
+
+  if(R.secC){
+    var sc=tones[R.secKey];
+    setText(9,'bold',sc);var sLbl='TAMBÉM VALE CONSIDERAR';
+    var sTitle=(setText(13,'bold'),doc.splitTextToSize(R.secC.title,CW-12));
+    var sMsg=(setText(10,'normal'),doc.splitTextToSize(R.secC.msg,CW-12));
+    var sh=6+4+sTitle.length*lh(13)+2+sMsg.length*lh(10)+5;
+    room(sh);
+    doc.setDrawColor(sc[0],sc[1],sc[2]);doc.setLineWidth(0.6);doc.roundedRect(M,y,CW,sh,3,3,'S');
+    var sy=y+6;
+    setText(8.5,'bold',sc);doc.text(sLbl,M+6,sy);sy+=5;
+    setText(13,'bold',INK);sTitle.forEach(function(l){doc.text(l,M+6,sy);sy+=lh(13);});
+    sy+=1;
+    setText(10,'normal',MUTED);sMsg.forEach(function(l){doc.text(l,M+6,sy);sy+=lh(10);});
+    y+=sh+5;
+  }
+
+  /* Indicadores */
+  var G=[['eco','Potencial EcoFit',R.eco,LV.eco,R.why.eco],['retro','Possibilidade de retrofit',R.retro,LV.retro,R.why.retro],['pd','Necessidade de ProDiag',R.pd,LV.pd,R.why.pd],['sub','Substituição completa',R.sub,LV.sub,R.why.sub]];
+  var gw=(CW-3*3)/4;
+  var whyLines=G.map(function(g){setText(7,'normal');return doc.splitTextToSize(g[4]||'',gw-6);});
+  var maxLines=Math.max.apply(null,whyLines.map(function(l){return l.length;}));
+  var gh=19+maxLines*lh(7)+2;
+  room(gh);
+  G.forEach(function(g,i){
+    var gx=M+i*(gw+3);
+    doc.setDrawColor(LINE[0],LINE[1],LINE[2]);doc.setLineWidth(0.3);doc.roundedRect(gx,y,gw,gh,2,2,'S');
+    setText(7.5,'normal',MUTED);doc.text(g[1],gx+3,y+5);
+    setText(12.5,'bold',INK);doc.text(g[3][g[2]],gx+3,y+11.5);
+    for(var k=1;k<=3;k++){
+      var lc=k<=g[2]?lampCol[g[0]]:[211,221,214];
+      doc.setFillColor(lc[0],lc[1],lc[2]);doc.circle(gx+4.5+(k-1)*6,y+16.2,1.9,'F');
+    }
+    setText(7,'normal',MUTED);
+    var wy=y+20.5;
+    whyLines[i].forEach(function(l){doc.text(l,gx+3,wy);wy+=lh(7);});
+  });
+  y+=gh+3;
+
+  /* Resumo */
+  heading('Resumo para a conversa');
+  var factRows=[['O que o cliente precisa',C.need],['Potencial de reaproveitamento',R.reuse],['Especialista a envolver',R.expert]];
+  if(A.obs&&A.obs.trim()) factRows.push(['Observação sobre o cliente',A.obs.trim()]);
+  factRows.forEach(function(f){
+    setText(10.5,'bold',MUTED);
+    var h=lh(10.5);room(h);doc.text(f[0],M,y+10.5*PT);
+    y+=h;para(f[1],10.5,'normal',INK,M);y+=1.2;
+  });
+  if(R.reasons.length){
+    y+=1;setText(10.5,'bold',INK);var h2=lh(10.5);room(h2);doc.text('Por que este diagnóstico',M,y+10.5*PT);y+=h2+1;
+    bullets(R.reasons);
+  }
+  if(R.part){
+    y+=1;setText(10.5,'bold',INK);var h3=lh(10.5);room(h3);doc.text('Particularidade deste equipamento',M,y+10.5*PT);y+=h3+1;
+    para(R.part.stays,10,'normal',INK,M);y+=1;para(R.part.why,10,'normal',MUTED,M);y+=1.2;
+  }
+
+  heading('Vantagens que você pode usar na conversa');bullets(C.benefits);
+  heading('Próximas ações');checks(R.next);
+  if(R.gaps.length){heading('Pontos a confirmar com o cliente');bullets(R.gaps);}
+
+  /* Rodapé em todas as páginas */
+  var n=doc.getNumberOfPages(), d=new Date().toLocaleDateString('pt-BR');
+  for(var i=1;i<=n;i++){
+    doc.setPage(i);
+    doc.setFillColor(0,116,42);doc.rect(0,0,PW,4,'F');
+    doc.setFillColor(61,205,88);doc.rect(0,4,PW,1.6,'F');
+    setText(8,'normal',MUTED);
+    doc.text('Orientação comercial baseada nas respostas do vendedor. A recomendação técnica final vem do especialista Schneider.',M,PH-10,{maxWidth:CW-30});
+    doc.text(d+'  |  '+i+'/'+n,PW-M,PH-10,{align:'right'});
+  }
+  return doc;
+}
+function downloadPdf(){
+  if(!pdfReady()){toast('O download de PDF não está disponível aqui.');return;}
+  var doc, buf;
+  try{doc=buildPdf();buf=doc.output('arraybuffer');}
+  catch(e){toast('Não foi possível gerar o PDF.');return;}
+  var name='ecofit-'+(slug(state.a.cliente)||slug(equipLabel(state.a))||'avaliacao');
+  if(state.a.cliente&&slug(state.a.cliente)) name+='-'+slug(equipLabel(state.a));
+  dl.save({filename:name+'.pdf',data:buf}).then(function(){
+    toast('PDF salvo');
+  },function(err){
+    var c=err&&err.code;
+    if(c==='declined') toast('Download cancelado');
+    else if(c==='rate_limited') toast('Aguarde um instante e tente de novo');
+    else toast('Não foi possível baixar o PDF neste ambiente.');
+  });
+}
+
+
+/* ---------- Busca: fabricante e equipamento ---------- */
+var MAKERS=[
+ {n:'Schneider Electric',a:['Merlin Gerin','Square D','Telemecanique','APC']},
+ {n:'ABB',a:['Asea','Brown Boveri']},
+ {n:'Danfoss'},
+ {n:'Eaton',a:['Cutler-Hammer']},
+ {n:'GE',a:['General Electric','Alstom']},
+ {n:'Hitachi Energy',a:['ABB Power Grids']},
+ {n:'Legrand'},
+ {n:'Mitsubishi Electric'},
+ {n:'Rockwell Automation',a:['Allen-Bradley']},
+ {n:'Siemens'},
+ {n:'Socomec'},
+ {n:'Toshiba'},
+ {n:'Vertiv',a:['Liebert']},
+ {n:'WEG'},
+ {n:'Westinghouse'}
+];
+var EQUIPS=[
+ {g:'Proteção e manobra',n:'Carro extraível de média tensão',a:['truck','carrinho']},
+ {g:'Proteção e manobra',n:'Contator de média tensão',a:['Rollarc']},
+ {g:'Proteção e manobra',n:'Contator',a:['TeSys','contatora']},
+ {g:'Proteção e manobra',n:'Relé de sobrecarga',a:['TeSys','relé térmico']},
+ {g:'Proteção e manobra',n:'Disjuntor-motor',a:['TeSys','guarda-motor']},
+ {g:'Proteção e manobra',n:'Chave seccionadora'},
+ {g:'Proteção e manobra',n:'Seccionador sob carga',a:['interruptor-seccionador']},
+ {g:'Proteção e manobra',n:'Fusível seccionador'},
+ {g:'Proteção e manobra',n:'Religador',a:['recloser']},
+ {g:'Proteção e manobra',n:'Partida de motor',a:['chave de partida']},
+ {g:'Painéis',n:'Painel de baixa tensão (QGBT)',a:['QGBT','painel BT','PrismaSeT','Blokset','Okken']},
+ {g:'Painéis',n:'Centro de controle de motores (CCM)',a:['CCM','Okken','Motorpact']},
+ {g:'Painéis',n:'Quadro de distribuição (QDF)',a:['QDF','QD','PrismaSeT']},
+ {g:'Painéis',n:'Barramento blindado',a:['busway']},
+ {g:'Painéis',n:'Painel de correção de fator de potência',a:['banco automático']},
+ {g:'Painéis',n:'Painel de comando e automação'},
+ {g:'Energia',n:'Banco de capacitores'},
+ {g:'Energia',n:'Filtro de harmônicas'},
+ {g:'Energia',n:'Reator'},
+ {g:'Energia',n:'Transformador de instrumento (TC ou TP)',a:['TC','TP']},
+ {g:'Energia',n:'Analisador de qualidade de energia',a:['PowerLogic','PM8000','ION','multimedidor']},
+ {g:'Energia',n:'Sistema de detecção de arco elétrico',a:['VAMP 121','arc flash']},
+ {g:'Energia',n:'Sistema de automação de subestação',a:['SCADA','supervisório','EcoStruxure Substation Operation','PowerSCADA']},
+ {g:'Energia',n:'Gerador',a:['grupo gerador']},
+ {g:'Energia',n:'Chave de transferência estática (STS)',a:['STS','Upsilon']},
+ {g:'Energia crítica',n:'Banco de baterias',a:['bateria']},
+ {g:'Energia crítica',n:'Retificador ou carregador de baterias',a:['retificador']},
+ {g:'Energia crítica',n:'PDU (unidade de distribuição de energia)',a:['PDU','Galaxy PDU']},
+ {g:'Energia crítica',n:'Ar condicionado de precisão',a:['CRAC','CRAH','chiller']},
+ {g:'Automação',n:'CLP (controlador lógico programável)',a:['PLC','Modicon','M340','M580','Premium','Quantum']},
+ {g:'Automação',n:'Inversor de frequência',a:['Altivar','ATV','drive','variador']},
+ {g:'Automação',n:'Soft-starter',a:['Altistart','partida suave']},
+ {g:'Automação',n:'Servoacionamento (servo drive)',a:['Lexium','servo']},
+ {g:'Automação',n:'IHM (interface homem-máquina)',a:['HMI','Magelis']},
+ {g:'Automação',n:'Sistema de controle distribuído (SDCD)',a:['DCS']},
+ {g:'Automação',n:'Fonte de alimentação 24 Vcc',a:['fonte']},
+ {g:'Automação',n:'Sensor ou instrumento de campo',a:['instrumentação']}
+];
+
+/* Catálogo de modelos Schneider (famílias e linhas confirmadas em fontes da Schneider) */
+var MODELS=[];
+var PRIMARY=['Disjuntor MT','Disjuntor BT','ATS','Relé de proteção','Cubículo MT','Transformador','Medidor','UPS'];
+function addModels(types,fam,list){
+  list.forEach(function(x){var o=typeof x==='string'?{n:x}:x;o.t=types;o.f=fam;MODELS.push(o);});
+}
+var N29='Fim de vida previsto para 2029. Há kit de substituição EcoFit com Altivar Process (fonte: blog da Schneider).';
+var NPQ='Linha anterior. Há oferta de migração para Modicon M340 ou M580 (fonte: catálogo Field Services).';
+addModels(['Disjuntor BT'],'Masterpact',[
+ {n:'Masterpact MTZ',a:['MTZ','MTZ Active']},{n:'Masterpact NW',a:['NW']},{n:'Masterpact NT',a:['NT']},
+ {n:'Masterpact M',tag:'Descontinuado',note:'Encerrado mundialmente em 2003. Oferta Masterkit: substitui por Masterpact MTZ2/MTZ3, com opção de kit completo (novo chassi) ou só os componentes internos sobre o chassi existente, com desligamento limitado. Fonte: apresentação Field Services Brasil.'}]);
+addModels(['Disjuntor BT'],'Compact, PowerPact e EasyPact',[
+ {n:'Compact NSX',a:['NSX']},{n:'Compact NS',a:['NS']},
+ {n:'Compact C801/1251',a:['Compact C','C801','C1251'],tag:'Descontinuado',note:'Fixo ou extraível, 3P/4P. Oferta Compactkit: retrofit plug-and-play para Compact NS em cerca de 45 min, sem desligamento, entregue com ou sem o disjuntor novo. Fonte: apresentação Field Services Brasil.'},
+ {n:'PowerPact'},{n:'EasyPact EZS',a:['EZS']}]);
+addModels(['Disjuntor MT'],'EvoPacT e Evolis',[
+ {n:'Evolis'},{n:'EvoPacT HVX',a:['HVX']},{n:'EvoPacT SF',a:['SF']},{n:'EvoPacT LF',a:['LF']},{n:'EvoPacT VA / VAH',a:['VA','VAH']},{n:'SF1'},{n:'SF2'}]);
+addModels(['Contator de média tensão'],'Rollarc',[{n:'Rollarc R400 / R400D',a:['Rollarc','R400','R400D']}]);
+addModels(['Relé de proteção'],'Sepam',[
+ {n:'Sepam série 10'},{n:'Sepam série 20'},{n:'Sepam série 40'},{n:'Sepam série 60'},{n:'Sepam série 80'},{n:'Sepam 1000+',a:['Sepam 1000']},
+ {n:'Sepam 2000',tag:'Descontinuado',note:'Descontinuado mundialmente em 2006. Solução plug-and-play para o Sepam 1000+ (ou retrofit para Easergy P3/P5), instalada no mesmo local, sem impacto mecânico. Fonte: apresentação Field Services Brasil.'}]);
+addModels(['Relé de proteção'],'Easergy',[{n:'Easergy P1'},{n:'Easergy P3'},{n:'Easergy P5'}]);
+addModels(['Relé de proteção'],'MiCOM',[{n:'MiCOM P20'},{n:'MiCOM P30'},{n:'MiCOM P40'}]);
+addModels(['Relé de proteção'],'VAMP',[{n:'VAMP 40'},{n:'VAMP 50'},{n:'VAMP 57'},{n:'VAMP 200'},{n:'VAMP 300'}]);
+addModels(['Relé de proteção','Sistema de detecção de arco elétrico'],'VAMP',[{n:'VAMP 121 (detecção de arco)',a:['VAMP121','arco']}]);
+addModels(['Relé de proteção'],'VIP',[{n:'VIP'}]);
+addModels(['Cubículo MT'],'Cubículos de média tensão',[
+ {n:'MCset'},{n:'SM6'},{n:'SM AirSeT',a:['AirSeT']},{n:'Premset'},{n:'RM6'},{n:'Motorpact'}]);
+addModels(['Painel de baixa tensão (QGBT)','Centro de controle de motores (CCM)','Quadro de distribuição (QDF)'],'Painéis de baixa tensão',[
+ {n:'PrismaSeT'},{n:'Okken'},{n:'Blokset'}]);
+addModels(['Transformador'],'Transformadores',[
+ {n:'Trihal',a:['seco','resina']},
+ {n:'Minera',tag:'Descontinuado',note:'Linha de transformadores herméticos em óleo, vendida à Green Transfo. A Schneider hoje comercializa só a linha seca Trihal (fonte: FAQ da Schneider).'}]);
+addModels(['Medidor','Analisador de qualidade de energia'],'PowerLogic',[
+ {n:'PowerLogic PM5000',a:['PM5000']},{n:'PowerLogic PM8000',a:['PM8000']},{n:'PowerLogic ION',a:['ION']}]);
+addModels(['UPS'],'UPS trifásicos',[
+ {n:'Galaxy VS'},{n:'Galaxy VM'},{n:'Galaxy VL'},{n:'Galaxy VX'},{n:'Galaxy VXL'},{n:'Galaxy PX'},{n:'Galaxy 3L'},{n:'Galaxy PW'},
+ {n:'Symmetra PX'},{n:'Easy UPS 3S'},{n:'Easy UPS 3M'},{n:'Easy UPS 3L'},{n:'Easy UPS 3-Phase Modular'}]);
+addModels(['ATS'],'Chaves de transferência',[{n:'TransferPacT',a:['Transferpact']}]);
+addModels(['Chave de transferência estática (STS)'],'Chaves de transferência',[{n:'Upsilon STS',a:['Upsilon']}]);
+addModels(['Inversor de frequência'],'Altivar',[
+ {n:'Altivar Process (ATV600 / ATV900)',a:['Process','ATV600','ATV900','ATV630','ATV650','ATV930','ATV950']},
+ {n:'Altivar 320',a:['ATV320']},{n:'Altivar 312',a:['ATV312']},
+ {n:'Altivar 61',a:['ATV61'],tag:'Descontinuado',note:N29},{n:'Altivar 71',a:['ATV71'],tag:'Descontinuado',note:N29}]);
+addModels(['Soft-starter'],'Altistart',[{n:'Altistart 48',a:['ATS48']},{n:'Altistart 22',a:['ATS22']},{n:'Altistart 01',a:['ATS01']}]);
+addModels(['CLP (controlador lógico programável)'],'Modicon',[
+ {n:'Modicon M221',a:['M221']},{n:'Modicon M241',a:['M241']},{n:'Modicon M251',a:['M251']},{n:'Modicon M340',a:['M340']},{n:'Modicon M580',a:['M580']},
+ {n:'Modicon Premium',tag:'Descontinuado',note:NPQ},{n:'Modicon Quantum',tag:'Descontinuado',note:NPQ}]);
+addModels(['Contator','Relé de sobrecarga','Disjuntor-motor'],'TeSys',[{n:'TeSys D',a:['LC1D']}]);
+addModels(['IHM (interface homem-máquina)'],'Magelis',[{n:'Magelis XBT GT',a:['XBT GT']}]);
+addModels(['Servoacionamento (servo drive)'],'Lexium',[{n:'Lexium 28',a:['LXM28']},{n:'Lexium 32',a:['LXM32']}]);
+function modelEntry(name){var n=norm(name);if(!n) return null;return MODELS.filter(function(m){return norm(m.n)===n;})[0]||null;}
+function typeLabel(){var a=state.a;return a.equip==='Outro'?(a.equipOutro||''):(a.equip||'');}
+function modelLists(){
+  var fab=state.a.fab||'';
+  if(fab&&fab!=='Schneider Electric') return {typed:[],all:[]};
+  var ty=typeLabel();
+  var typed=ty?MODELS.filter(function(m){return m.t.indexOf(ty)>-1;}):MODELS;
+  return {typed:typed,all:MODELS};
+}
+function setEquipFromModel(ty){
+  var a=state.a, prev=typeLabel();
+  if(prev!==ty) a.partes=[];
+  if(PRIMARY.indexOf(ty)>-1){a.equip=ty;a.equipOutro='';}
+  else{a.equip='Outro';a.equipOutro=ty;}
+  var r=app.querySelector('input[name="equip"][value="'+ty+'"]')||app.querySelector('input[name="equip"][value="Outro"]');
+  if(r) r.checked=true;
+  var q=app.querySelector('[data-q="equip"]');if(q) q.classList.remove('bad');
+  var eo=app.querySelector('[data-combo-input="equipOutro"]');if(eo) eo.value=a.equipOutro||'';
+  updateVisibility(true);
+  if(prev&&prev!==ty) toast('Equipamento ajustado para '+ty);
+}
+function applyModel(en){
+  var a=state.a;
+  if(a.fab!=='Schneider Electric'){a.fab='Schneider Electric';syncMaker();}
+  if(en.t.indexOf(typeLabel())<0) setEquipFromModel(en.t[0]);
+}
+var COMBOS={fab:MAKERS,equipOutro:EQUIPS};
+function norm(x){return String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+
+function makerHtml(q){
+  var v=state.a.fab||'', on=v==='Schneider Electric';
+  return '<div class="q" data-q="fab"><div class="ql" id="l-fab">'+esc(q.label)+'<span class="tag">opcional</span></div>'+
+   '<button type="button" class="maker-btn'+(on?' on':'')+'" data-act="maker" aria-pressed="'+(on?'true':'false')+'">'+
+   '<span class="bolt" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>Schneider Electric</button>'+
+   comboHtml('fab','Ou busque outro fabricante',on?'':v)+'</div>';
+}
+function comboHtml(id,ph,val){
+  return '<div class="combo"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'+
+   '<input class="txt" type="text" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="lb-'+id+'" aria-label="'+esc(ph)+'" '+
+   'placeholder="'+esc(ph)+'" value="'+esc(val)+'" autocomplete="off" data-combo-input="'+id+'">'+
+   '<ul class="lb" id="lb-'+id+'" role="listbox" hidden></ul></div>';
+}
+function comboBits(input){var box=input.closest('.combo');return {lb:box.querySelector('.lb'),id:input.getAttribute('data-combo-input')};}
+function openCombo(input){
+  var c=comboBits(input), q=input.value, nq=norm(q), out=[];
+  function hit(it){var hay=[it.n].concat(it.a||[]);return !nq||hay.some(function(h){return norm(h).indexOf(nq)>-1;});}
+  if(c.id==='modelo'){
+    var ml=modelLists();
+    out=ml.typed.filter(hit);
+    if(!out.length&&nq) out=ml.all.filter(hit);
+  }else{
+    COMBOS[c.id].forEach(function(it){
+      if(c.id==='fab'&&!nq&&it.n==='Schneider Electric') return;
+      if(hit(it)) out.push(it);
+    });
+  }
+  out=out.slice(0,60);
+  var html='', n=0;
+  out.forEach(function(it){
+    var alias='';
+    if(nq&&norm(it.n).indexOf(nq)<0){alias=(it.a||[]).filter(function(a){return norm(a).indexOf(nq)>-1;})[0]||'';}
+    html+='<li role="option" id="'+c.id+'-o'+(n++)+'" data-val="'+esc(it.n)+'">'+esc(it.n)+(alias?' <small>('+esc(alias)+')</small>':'')+(it.tag==='Descontinuado'?'<span class="pill legacy">Descontinuado</span>':'')+((it.g||it.f)?'<span class="grp">'+esc(it.g||it.f)+'</span>':'')+'</li>';
+  });
+  var exact=out.some(function(it){return norm(it.n)===nq;});
+  if(q.trim()&&!exact) html+='<li role="option" class="free" id="'+c.id+'-o'+(n++)+'" data-val="'+esc(q.trim())+'">Usar “'+esc(q.trim())+'”</li>';
+  c.lb.innerHTML=html;c.lb.hidden=!html;
+  input.setAttribute('aria-expanded',html?'true':'false');
+}
+function closeCombo(input){var c=comboBits(input);c.lb.hidden=true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');}
+function commitCombo(input){
+  var id=input.getAttribute('data-combo-input'), v=input.value.trim();
+  if(id==='fab'){
+    if(v) state.a.fab=(norm(v)==='schneider electric'||norm(v)==='schneider')?'Schneider Electric':v;
+    else if(state.a.fab!=='Schneider Electric') state.a.fab='';
+    syncMaker();
+  }else{
+    state.a[id]=v;
+    if(id==='modelo'){var me0=modelEntry(v);if(me0) applyModel(me0);}
+  }
+}
+function pickFromLi(li){
+  var box=li.closest('.combo'), input=box.querySelector('input'), id=input.getAttribute('data-combo-input'), val=li.getAttribute('data-val');
+  state.a[id]=val;
+  input.value=(id==='fab'&&val==='Schneider Electric')?'':val;
+  closeCombo(input);
+  if(id==='fab') syncMaker();
+  if(id==='modelo'){var en=modelEntry(val);if(en) applyModel(en);}
+}
+function syncMaker(){
+  var b=app.querySelector('.maker-btn'); if(!b) return;
+  var on=state.a.fab==='Schneider Electric';
+  b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');
+  var inp=app.querySelector('[data-combo-input="fab"]');
+  if(inp&&on&&document.activeElement!==inp) inp.value='';
+}
+function comboKey(e,input){
+  var c=comboBits(input), lis=[].slice.call(c.lb.querySelectorAll('li'));
+  if(e.key==='Escape'){closeCombo(input);return;}
+  if(e.key==='Enter'){
+    e.preventDefault();
+    var act=c.lb.querySelector('li.act');
+    if(act&&!c.lb.hidden) pickFromLi(act); else {commitCombo(input);closeCombo(input);}
+    return;
+  }
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    if(c.lb.hidden){openCombo(input);lis=[].slice.call(c.lb.querySelectorAll('li'));}
+    if(!lis.length) return;
+    var cur=-1;lis.forEach(function(l,i){if(l.classList.contains('act')) cur=i;});
+    cur=e.key==='ArrowDown'?(cur+1)%lis.length:(cur<=0?lis.length-1:cur-1);
+    lis.forEach(function(l,i){l.classList.toggle('act',i===cur);l.setAttribute('aria-selected',i===cur?'true':'false');});
+    input.setAttribute('aria-activedescendant',lis[cur].id);
+    lis[cur].scrollIntoView({block:'nearest'});
+  }
+}
+
+/* ---------- E-mails ---------- */
+var MAIL_KINDS=[
+ {id:'visita',label:'Agradecimento pós-visita'},
+ {id:'proposta',label:'Envio da proposta'},
+ {id:'followup',label:'Follow-up da proposta'},
+ {id:'acompanhamento',label:'Acompanhamento'},
+ {id:'interno',label:'Resumo para você'}
+];
+function tr(x){return (x==null?'':String(x)).trim();}
+function ativoDesc(A){
+  var eq=equipLabel(A), m=tr(A.modelo), f=tr(A.fab);
+  return eq+(m?' '+m:'')+(f?' ('+f+')':'');
+}
+function situacaoList(A){
+  var L=[];
+  function is(k,v){return A[k]===v;}
+  var ageTxt={'Menos de 10 anos':'menos de 10 anos','Entre 10 e 15 anos':'10 a 15 anos','Entre 15 e 20 anos':'15 a 20 anos','Mais de 20 anos':'mais de 20 anos'};
+  var me=modelEntry(A.modelo);
+  if(ageTxt[A.idade]) L.push('instalado há '+ageTxt[A.idade]);
+  if(is('condicao','Não')||is('duvidas','Sim')) L.push('condição real ainda a confirmar');
+  if(is('falhas','Sim')) L.push('falhas ou interrupções recorrentes');
+  if(is('desgaste','Sim')) L.push('sinais de desgaste');
+  if(is('pecas','Sim')) L.push('dificuldade para encontrar peças');
+  if(is('obsolescencia','Sim')) L.push('preocupação com obsolescência');
+  if(me&&me.tag==='Descontinuado') L.push('modelo descontinuado');
+  if(A.impacto==='Alto'||A.impacto==='Crítico') L.push('impacto '+A.impacto.toLowerCase()+' em caso de falha');
+  if(is('estrategico','Sim')) L.push('equipamento estratégico');
+  if(is('restricao','Sim')) L.push('restrição para desligamento');
+  return L;
+}
+/* Pergunta final de cada e-mail — mantém o assunto em aberto, sempre ligada ao diagnóstico */
+var CLOSING_Q={
+  eco:'Faz sentido conversarmos essa semana para eu mostrar como o EcoFit se encaixa nesse equipamento?',
+  retrofit:'Posso te ligar para alinharmos o escopo do retrofit?',
+  prodiag:'Prefere que eu já agende o ProDiag, ou batemos um papo antes?',
+  sub:'Posso te ligar para conversarmos sobre os próximos passos da substituição?',
+  nutrir:'Faz sentido eu voltar a falar com você daqui a algumas semanas?',
+  foraCatalogo:'Posso confirmar com o especialista qual a melhor solução e te retorno em breve?'
+};
+function buildEmail(kind){
+  var A=state.a, R=state.R||analyze(A), key=R.key, m=state.mail;
+  var nome=tr(m.contact)||'[Nome do contato]', eu=tr(m.seller)||'[Seu nome]';
+  var ativo=ativoDesc(A);
+  var dateTxt=fmtDateBR(m.date)||'[data]';
+  var OFFER={eco:'EcoFit',retrofit:'retrofit',prodiag:'ProDiag',sub:'renovação',nutrir:'acompanhamento',foraCatalogo:'modernização'}[key]||'modernização';
+  var WHY={
+    eco:'Com o EcoFit, aproveitamos parte da infraestrutura atual, com menor investimento e menos tempo de parada.',
+    retrofit:'Com o retrofit, atualizamos proteção e controle e aproveitamos a estrutura que ainda é utilizável.',
+    prodiag:'O ProDiag mostra a condição real do ativo e apoia a decisão entre modernizar ou substituir.',
+    sub:'A substituição garante confiabilidade e segurança para a operação.',
+    nutrir:'Acompanhar a condição do ativo ajuda a antecipar decisões.',
+    foraCatalogo:'Ainda vou confirmar com o especialista qual programa de modernização se aplica a esse equipamento.'
+  }[key];
+  var LINE={
+    eco:'aproveitar a infraestrutura atual, com menos investimento e menos tempo de parada.',
+    retrofit:'atualizar proteção e controle, mantendo a estrutura utilizável.',
+    prodiag:'conhecer a condição real do ativo antes de decidir.',
+    sub:'garantir confiabilidade e segurança com a renovação.',
+    nutrir:'acompanhar a condição do ativo para antecipar decisões.',
+    foraCatalogo:'confirmar qual programa de modernização se aplica ao equipamento.'
+  }[key];
+  var sit=situacaoList(A).slice(0,4);
+  var obs=sit.join(', ').replace(/, ([^,]*)$/,' e $1');
+  var hello='Olá, '+nome+'! Tudo bem? Espero que você e sua equipe estejam bem.';
+  var updTxt=tr(m.update).replace(/[.]+$/,'');
+  var updateLine=updTxt?('Ponto que vale lembrar: '+updTxt+'.'):'';
+  var closing=CLOSING_Q[key]||CLOSING_Q.nutrir;
+  var parts=[], subject='';
+
+  if(kind==='visita'){
+    subject='Obrigado pela conversa: '+ativo;
+    parts.push(hello,'Obrigado pela conversa do dia '+dateTxt+'. Foi ótimo conhecer melhor a operação e os desafios com '+ativo+'.');
+    if(obs) parts.push('O que observamos: '+obs+'.\n'+WHY);
+    else parts.push(WHY);
+    if(updateLine) parts.push(updateLine);
+    parts.push('Se algo acima não corresponder ao que vocês vivem no dia a dia, me avise. '+closing);
+  }else if(kind==='proposta'){
+    subject='Proposta de '+OFFER+': '+ativo;
+    var scope=key==='prodiag'?'- [Escopo do diagnóstico]\n- [Data prevista]\n- [Condições comerciais e validade]':
+      (key==='nutrir'||key==='foraCatalogo'?'- [Serviço proposto]\n- [Periodicidade ou prazo]\n- [Condições comerciais e validade]':
+      '- [Escopo do que está incluído]\n- [Prazo e janela de parada prevista]\n- [Condições comerciais e validade]');
+    parts.push(hello,'Depois da nossa conversa sobre a visita, segue em anexo a proposta de '+OFFER+' para '+ativo+'.');
+    if(obs) parts.push('O que está acontecendo: '+obs+'.\n'+WHY);
+    else parts.push(WHY);
+    parts.push('A proposta traz:\n'+scope);
+    if(updateLine) parts.push(updateLine);
+    parts.push('Fico à disposição para qualquer dúvida. '+closing);
+  }else if(kind==='followup'){
+    subject='Acompanhamento da proposta: '+ativo;
+    var extra=A.restricao==='Sim'?' Se a janela de parada for o desafio, podemos avaliar juntos como reduzir a intervenção.':'';
+    parts.push('Olá, '+nome+'! Tudo bem? Espero que a semana esteja boa por aí.',
+      'Passando para saber se você conseguiu analisar a proposta de '+OFFER+' que te enviei em '+dateTxt+' para '+ativo+'. O ponto central: '+LINE+extra);
+    if(updateLine) parts.push(updateLine);
+    parts.push('Posso ligar em [dia e horário] para conversarmos?');
+  }else if(kind==='interno'){
+    subject='Resumo da avaliação — '+ativo;
+    var toDo=R.next.map(function(n){return '[ ] '+n;}).join('\n');
+    parts.push('Resumo rápido para acompanhar este caso ('+dateTxt+').');
+    parts.push('Contato: '+(tr(m.contact)||'(preencher)')+' — Ativo: '+ativo);
+    parts.push('Diagnóstico: '+R.C.title+(R.secC?' (também vale considerar: '+R.secC.title+')':''));
+    if(R.reasons.length) parts.push('Motivos: '+R.reasons.join('; ')+'.');
+    parts.push('Próximas ações:\n'+toDo);
+    if(updateLine) parts.push(updateLine);
+  }else{
+    subject='Acompanhamento: '+ativo;
+    parts.push(hello,
+      'Passando para saber como está a operação e se algo mudou em '+ativo+'. Se surgirem falhas, alarmes ou dificuldade com peças, me avise que avaliamos juntos os próximos passos.');
+    if(updateLine) parts.push(updateLine);
+    parts.push('Se fizer sentido, posso agendar uma conversa rápida de [15 min], ou responda com o que fizer mais sentido para você.');
+  }
+  return {subject:subject,body:parts.join('\n\n')};
+}
+function mailHtml(){
+  var m=state.mail;
+  var chips=MAIL_KINDS.map(function(k){
+    return '<label class="opt"><input type="radio" name="mailkind" value="'+k.id+'"'+(m.kind===k.id?' checked':'')+'><span>'+esc(k.label)+'</span></label>';
+  }).join('');
+  return '<section class="card tight section no-print" aria-labelledby="mailTitle"><h3 id="mailTitle">E-mails prontos para o cliente</h3>'+
+   '<p class="hint">Preencha os nomes, escolha o modelo e ajuste o texto. Complete os trechos entre [colchetes] antes de enviar.</p>'+
+   '<div class="mail-names">'+
+   '<label class="mail-l">Nome do contato<input class="txt" type="text" data-mail="contact" value="'+esc(m.contact)+'" placeholder="Ex.: Carlos" autocomplete="off"></label>'+
+   '<label class="mail-l">E-mail do contato<span class="tag">opcional</span><input class="txt" type="email" data-mail="contactEmail" value="'+esc(m.contactEmail)+'" placeholder="Para abrir já preenchido no seu e-mail" autocomplete="off"></label>'+
+   '<label class="mail-l">Seu nome<input class="txt" type="text" data-mail="seller" value="'+esc(m.seller)+'" placeholder="Como você assina" autocomplete="off"></label>'+
+   '<label class="mail-l">Data<input class="txt" type="date" lang="pt-BR" data-mail="date" value="'+esc(m.date)+'"></label></div>'+
+   '<label class="mail-l">Atualização do caso<span class="tag">opcional</span><textarea class="txt obs" data-mail="update" placeholder="O que mudou desde o último contato — ex.: cliente pediu desconto, está aguardando aprovação.">'+esc(m.update)+'</textarea><small class="upd-hint">Isso entra como uma linha na mensagem abaixo (e no resumo para você) sempre que você mudar este campo, mesmo que já tenha editado o texto.</small></label>'+suggestBoxWrap(m.update,'update')+
+   '<div class="opts mail-kinds" role="radiogroup" aria-label="Modelo de e-mail">'+chips+'</div>'+
+   '<label class="mail-l">Assunto<input class="txt" type="text" data-mail="subject" autocomplete="off"></label>'+
+   '<label class="mail-l">Mensagem<textarea class="mail-body" data-mail="body" spellcheck="true"></textarea></label>'+
+   '<div class="actions"><button type="button" class="btn primary" data-act="mailto">Abrir no seu e-mail</button>'+
+   '<button type="button" class="btn" data-act="copy-body">Copiar mensagem</button>'+
+   '<button type="button" class="btn" data-act="copy-subject">Copiar assunto</button></div>'+
+   '<p class="hint" style="margin:8px 0 0">Se o e-mail vier cortado no seu programa de e-mail, copie a mensagem (botão acima) em vez de usar "Abrir no seu e-mail".</p>'+
+   '<p class="hint" style="margin:0">Preencha os nomes antes de editar o texto: depois de editar, os nomes deixam de atualizar a mensagem sozinhos.</p></section>';
+}
+function autosize(t){t.style.height='auto';t.style.height=(t.scrollHeight+6)+'px';}
+function mailFill(){
+  var e=buildEmail(state.mail.kind);
+  state.mail.subject=e.subject;state.mail.body=e.body;
+  var s=app.querySelector('[data-mail="subject"]'), b=app.querySelector('[data-mail="body"]');
+  if(s) s.value=e.subject;
+  if(b){b.value=e.body;autosize(b);}
+}
+function syncUpdateLine(){
+  var b=app.querySelector('[data-mail="body"]');
+  if(!b) return;
+  var updTxt=tr(state.mail.update).replace(/[.]+$/,'');
+  var newLine=updTxt?('Ponto que vale lembrar: '+updTxt+'.'):'';
+  var body=b.value;
+  var re=/(^|\n\n)Ponto que vale lembrar: [\s\S]*?(?=\n\n|$)/;
+  if(re.test(body)){
+    body=newLine?body.replace(re,function(m,p1){return p1+newLine;}):body.replace(re,'').replace(/\n{3,}/g,'\n\n').trim();
+  }else if(newLine){
+    var paras=body.split('\n\n');
+    if(paras.length>1){paras.splice(paras.length-1,0,newLine);body=paras.join('\n\n');}
+    else body=body+'\n\n'+newLine;
+  }
+  b.value=body;state.mail.body=body;autosize(b);
+}
+function mailInput(f,el){
+  if(f==='update'){
+    state.mail.update=el.value;
+    if(!state.mail.edited) mailFill(); else syncUpdateLine();
+    return;
+  }
+  if(f==='contact'||f==='contactEmail'||f==='seller'||f==='date'){state.mail[f]=el.value;if(!state.mail.edited) mailFill();return;}
+  if(f==='subject'){state.mail.subject=el.value;state.mail.edited=true;return;}
+  if(f==='body'){state.mail.body=el.value;state.mail.edited=true;autosize(el);}
+}
+
+/* ---------- Navegação ---------- */
+function render(){
+  if(state.view==='form') renderForm(); else renderResult();
+}
+function go(step){state.step=step;state.view='form';render();window.scrollTo(0,0);}
+
+app.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.name==='mailkind'){state.mail.kind=t.value;state.mail.edited=false;mailFill();return;}
+  if(t.hasAttribute&&t.hasAttribute('data-combo-input')){commitCombo(t);return;}
+  if(state.view!=='form'||!t.name) return;
+  if(t.type==='radio'){
+    state.a[t.name]=t.value;
+    if(t.name==='equip') state.a.partes=[];
+    var q=t.closest('.q');if(q) q.classList.remove('bad');
+    updateVisibility();
+  }else if(t.type==='checkbox'){
+    var NONE_BY_FIELD={partes:PARTES_NONE,recusa:RECUSA_NONE};
+    var noneVal=NONE_BY_FIELD[t.name];
+    if(noneVal){
+      if(t.value===noneVal&&t.checked){state.a[t.name]=[noneVal];}
+      else{
+        var boxes=app.querySelectorAll('input[name="'+t.name+'"]:checked');
+        state.a[t.name]=Array.prototype.map.call(boxes,function(b){return b.value;}).filter(function(v){return v!==noneVal;});
+      }
+      var q=t.closest('.q');
+      if(q){var noneChecked=state.a[t.name].indexOf(noneVal)>-1;
+        q.querySelectorAll('input[name="'+t.name+'"]').forEach(function(b){
+          var mustClear=noneChecked&&b.value!==noneVal;
+          b.disabled=mustClear;
+          if(mustClear) b.checked=false;
+        });
+        q.classList.remove('bad');
+      }
+    }else{
+      var boxes2=app.querySelectorAll('input[name="'+t.name+'"]:checked');
+      state.a[t.name]=Array.prototype.map.call(boxes2,function(b){return b.value;});
+    }
+  }
+});
+app.addEventListener('input',function(e){
+  var t=e.target;
+  var id=t.getAttribute&&t.getAttribute('data-text');
+  if(id){state.a[id]=t.value;if(id==='obs') refreshSuggestBox('obs',t.value);return;}
+  if(t.hasAttribute&&t.hasAttribute('data-combo-input')){openCombo(t);return;}
+  var mf=t.getAttribute&&t.getAttribute('data-mail');
+  if(mf){mailInput(mf,t);if(mf==='update') refreshSuggestBox('update',t.value);}
+});
+app.addEventListener('focusin',function(e){
+  var t=e.target;
+  if(t.hasAttribute&&t.hasAttribute('data-combo-input')){
+    openCombo(t);
+    setTimeout(function(){t.closest('.combo').scrollIntoView({block:'start',behavior:reduceMotion()?'auto':'smooth'});},60);
+  }
+});
+app.addEventListener('focusout',function(e){
+  var t=e.target;
+  if(t.hasAttribute&&t.hasAttribute('data-combo-input')) setTimeout(function(){if(document.activeElement!==t) closeCombo(t);},250);
+});
+app.addEventListener('keydown',function(e){var t=e.target;if(t.hasAttribute&&t.hasAttribute('data-combo-input')) comboKey(e,t);});
+app.addEventListener('pointerdown',function(e){
+  if(e.pointerType==='mouse'&&e.target.closest&&e.target.closest('.lb li')) e.preventDefault();
+});
+app.addEventListener('click',function(e){
+  var li=e.target.closest&&e.target.closest('.lb li');
+  if(li){pickFromLi(li);return;}
+  var b=e.target.closest('[data-act]');
+  if(!b||b.disabled) return;
+  var act=b.getAttribute('data-act');
+  if(act==='next'){
+    if(!validateStep()) return;
+    if(state.step<STEPS.length-1){state.step++;state.max=Math.max(state.max,state.step);render();window.scrollTo(0,0);}
+    else{state.max=STEPS.length-1;state.view='result';render();window.scrollTo(0,0);}
+  }else if(act==='back'){
+    if(state.step>0) go(state.step-1);
+  }else if(act==='goto'){
+    var i=parseInt(b.getAttribute('data-i'),10);
+    if(state.view==='form'&&i>state.step&&!validateStep()) return;
+    go(i);
+  }else if(act==='edit'){
+    go(STEPS.length-1);
+  }else if(act==='restart'){
+    if(b.getAttribute('data-armed')==='1'){
+      state=newState();render();window.scrollTo(0,0);
+    }else{
+      b.setAttribute('data-armed','1');
+      b.textContent='Confirmar: apagar respostas';
+      setTimeout(function(){if(b.isConnected){b.removeAttribute('data-armed');b.textContent='Nova avaliação';}},4000);
+    }
+  }else if(act==='copy'){
+    copyText(summaryText()).then(function(ok){toast(ok?'Resumo copiado':'Não foi possível copiar. Use a opção de imprimir.');});
+  }else if(act==='maker'){
+    state.a.fab=state.a.fab==='Schneider Electric'?'':'Schneider Electric';
+    var mi=app.querySelector('[data-combo-input="fab"]');
+    if(mi){mi.value='';closeCombo(mi);}
+    syncMaker();
+  }else if(act==='mailto'){
+    var to=state.mail.kind==='interno'?'':(tr(state.mail.contactEmail)||'');
+    var su=app.querySelector('[data-mail="subject"]'),bo=app.querySelector('[data-mail="body"]');
+    var subj=encodeURIComponent(su?su.value:''), body=encodeURIComponent(bo?bo.value:'');
+    location.href='mailto:'+encodeURIComponent(to)+'?subject='+subj+'&body='+body;
+  }else if(act==='copy-body'){
+    var bt=app.querySelector('[data-mail="body"]');
+    copyText(bt?bt.value:'').then(function(ok){toast(ok?'Mensagem copiada':'Não foi possível copiar. Selecione o texto e copie manualmente.');});
+  }else if(act==='copy-subject'){
+    var st=app.querySelector('[data-mail="subject"]');
+    copyText(st?st.value:'').then(function(ok){toast(ok?'Assunto copiado':'Não foi possível copiar. Selecione o texto e copie manualmente.');});
+  }else if(act==='pdf'){
+    downloadPdf();
+  }else if(act==='print'){
+    window.print();
+  }else if(act==='apply-suggest'||act==='dismiss-suggest'){
+    var src=b.getAttribute('data-source'),key=b.getAttribute('data-key'),mode=b.getAttribute('data-mode');
+    var dismissKey=src+':'+key+':'+mode;
+    if(act==='dismiss-suggest'){
+      state.suggestDismissed[dismissKey]=true;
+    }else{
+      var rule=SUGGEST_RULES.filter(function(r){return r.key===key;})[0];
+      if(rule){
+        var arr=(state.a.recusa||[]).filter(function(v){return v!==RECUSA_NONE;});
+        var idx=arr.indexOf(rule.label);
+        if(mode==='add'){ if(idx<0) arr.push(rule.label); }
+        else{ if(idx>-1) arr.splice(idx,1); }
+        state.a.recusa=arr;
+        toast(mode==='add'?('Marcado: cliente não quer '+rule.label):('Removido: recusa de '+rule.label));
+      }
+    }
+    render();
+  }
+});
+
+render();
+})();
+</script>
+</body>
+</html>
